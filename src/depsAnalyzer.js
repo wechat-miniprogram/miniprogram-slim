@@ -52,17 +52,17 @@ const genAppDepsGraph = () => {
     return genDepsGraph(suffixExtname(entry))
   })
 
-  // const usedJsArray= []
-  // graphs.forEach(graph => {
-  //   usedJsArray.push(...Object.keys(graph))
-  // })
-  // console.log('Used Js Files: ')
-  // console.log(result.join('\n'))
+  const usedJsArray= []
+  graphs.forEach(graph => {
+    usedJsArray.push(...Object.keys(graph))
+  })
+  console.log('usedJsArray: ')
+  console.log(usedJsArray)
   
   return graphs
 }
 
 program
-  .command('analyzer <app>')
+  .command('analyzer')
   .description('Analyze dependencies of source code')
   .action(genAppDepsGraph)
