@@ -12,8 +12,11 @@
   "dependencies": {
     "@babel/parser": "^7.8.7",
     "@babel/traverse": "^7.8.6",
+    "babel-core": "^6.26.3",
+    "babel-types": "^6.26.0",
     "clean-css": "^4.2.3",
     "commander": "^4.1.1",
+    "css": "^2.2.4",
     "fs-extra": "^8.1.0",
     "glob": "^7.1.6",
     "imagemin": "^7.0.1",
@@ -22,6 +25,7 @@
     "imagemin-pngquant": "^8.0.0",
     "inquirer": "^7.0.6",
     "jscpd": "^3.0.0",
+    "node-html-parser": "^1.2.14",
     "ora": "^4.0.3",
     "shelljs": "^0.8.3",
     "spritesmith": "^3.4.0"

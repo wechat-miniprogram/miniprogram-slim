@@ -3,7 +3,7 @@ const program = require('commander')
 require('./jscpd')
 require('./spritesmith')
 require('./imagemin')
-require('./depsAnalyzer')
+require('./depsAnalyzer/index')
 
 const packageJson = require('../package.json')
 program

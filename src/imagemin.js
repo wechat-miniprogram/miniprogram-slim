@@ -5,27 +5,6 @@ const imageminJpegtran = require('imagemin-jpegtran')
 const imageminPngquant = require('imagemin-pngquant')
 const imageminGifsicle = require('imagemin-gifsicle')
 
-/**
-const normalizePluginOptions = (m, previous = []) => {
-  let plugin = m
-  let option = {}
-
-  if (m.indexOf('=') >= 0) {
-    [plugin, key] = m.split('=')[0].split('.')
-    let value = m.split('=')[1]
-    if (value.indexOf(',') >= 0) {
-      value = value.split(',')
-    }
-    option[key] = value
-  } else if (m.indexOf('.') >= 0) {
-    [plugin, key] = m.split('.')
-    option[key] = true
-  }
-  previous.push([plugin, option])
-  return previous
-}
-*/
-
 async function imageminAction(input, cli) {
   const {progressive, output, pngQuality} = cli
   let quality = []
