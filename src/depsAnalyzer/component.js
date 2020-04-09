@@ -4,8 +4,17 @@ const fs = require('fs-extra')
 const {suffixExtname} = require('./util')
 const ext = 'json'
 
-const weappNpmGlob = glob.sync('**/miniprogram_npm/', {ignore: '**/node_modules/**'})
-const weappNpmPath = weappNpmGlob[0] || ''
+let weappNpmPath = ''
+
+const setWeappNpmPath = (miniprogramRoot) => {
+  const weappNpmGlob = glob.sync('**/miniprogram_npm/', {
+    ignore: '**/node_modules/**',
+    cwd: miniprogramRoot
+  })
+  if (weappNpmGlob[0]) {
+    weappNpmPath = path.join(miniprogramRoot, weappNpmGlob[0])  
+  }
+}
 
 const findAbsolutePath = (root, relativePath) => {
   // 相对/绝对路径
@@ -68,6 +77,7 @@ const genCompDepsMap = (compDepsGraph) => {
 
 
 module.exports = {
+  setWeappNpmPath,
   genCompDepsGraph,
   genCompDepsMap
 }

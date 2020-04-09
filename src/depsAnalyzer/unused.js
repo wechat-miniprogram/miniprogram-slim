@@ -13,9 +13,10 @@ const findAllComponent = (miniprogramRoot) => {
   const components = []
 
   for (let filePath of jsonFiles) {
-    const content = fs.readJSONSync(filePath)
+    const realPath = path.join(miniprogramRoot, filePath)
+    const content = fs.readJSONSync(realPath)
     if (content.component === true) {
-      components.push(removeExtname(filePath))
+      components.push(removeExtname(realPath))
     }
   }
   return components
@@ -30,7 +31,8 @@ const findAllFiles = (miniprogramRoot) => {
       ignore: ['**/node_modules/**'],
       cwd: miniprogramRoot
     })
-    allFiles.push(...files)
+    const realPathFile = files.map(file => path.join(miniprogramRoot, file))
+    allFiles.push(...realPathFile)
   })
   return allFiles
 }

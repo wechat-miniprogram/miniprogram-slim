@@ -7,17 +7,18 @@ const {createLog} = require('./util')
 const {analyzeComponent} = require('./analyzerComp')
 const {findUnusedFiles} = require('./unused')
 const log = createLog('@index')
+const {setWeappNpmPath} = require('./component')
 
 
 /**
  * 1. 忽略引用插件中的组件
  * 2. 编译后的小程序根目录进行查询
  */
-const genAppDepsGraph = (app) => {
+const genAppDepsGraph = (entry) => {
   // log.setLevel('warn')
 
   // const appJsonPath = path.join(process.cwd(), app)
-  const appJsonPath = 'app.json'
+  const appJsonPath = entry || 'app.json'
   const miniprogramRoot = path.dirname(appJsonPath)
 
   if (!fs.existsSync(appJsonPath)) {
@@ -30,6 +31,8 @@ const genAppDepsGraph = (app) => {
     pages: {},
     subpackages: {}
   }
+  // 设置正确的npm包路径
+  setWeappNpmPath(miniprogramRoot)
 
   appDeps.app = analyzeComponent(appJsonPath)
   const appJson = fs.readJSONSync(appJsonPath)
@@ -43,18 +46,21 @@ const genAppDepsGraph = (app) => {
     })
   })
 
-  const entrys = appJson.pages
-  entrys.forEach(entry => {
-    appDeps.pages[entry] = analyzeComponent(entry)
+  const pages = appJson.pages
+  pages.forEach(page => {
+    const entry = path.join(miniprogramRoot, page)
+    appDeps.pages[page] = analyzeComponent(entry)
   })
+  // console.log(inspect(appDeps, {showHidden: false, depth: null}))
+
   
   const unused = findUnusedFiles(miniprogramRoot, appDeps)
-  console.log(unused)
   // console.log('****** deps analyzer ******')
+  console.log(unused)
   // console.log(inspect(appDeps, {showHidden: false, depth: null}))
 }
 
 program
-  .command('analyzer')
+  .command('analyzer [entry]')
   .description('Analyze dependencies of source code')
   .action(genAppDepsGraph)
