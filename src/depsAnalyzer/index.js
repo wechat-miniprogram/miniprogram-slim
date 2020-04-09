@@ -10,9 +10,23 @@ const {genEsModuleDepsGraph, genWxsModuleDepsGraph} = require('./esmodule')
 const {genCompDepsGraph, genCompDepsMap} = require('./component')
 const {genWxssDepsGraph} = require('./wxss')
 
+const {findAllComponent, findAllWxml} = require('./unused')
+
+/**
+ * 1. 未处理组件 behavior 等依赖
+ * 2. 忽略引用插件中的组件
+ * 3. 编译后的小程序根目录进行查询
+ * 
+ */
 const genAppDepsGraph = (app) => {
   // const appJsonPath = path.join(process.cwd(), app)
   const appJsonPath = 'app.json'
+  const miniprogramRoot = path.dirname(appJsonPath)
+
+  // findAllComponent(miniprogramRoot)
+  // findAllWxml(miniprogramRoot)
+  // return
+
 
   if (!fs.existsSync(appJsonPath)) {
     console.warn('Error: App.json is not exist')

@@ -24,6 +24,7 @@ const findAbsolutePath = (root, relativePath) => {
   return ''
 }
 
+// 忽略插件中的组件
 const singleJsonAnalyzer = (filePath) => {
   const config = fs.readJSONSync(filePath)
   const usingComponents = config.usingComponents || {}
@@ -31,8 +32,10 @@ const singleJsonAnalyzer = (filePath) => {
   const deps = {}
   Object.keys(usingComponents).forEach(comp => {
     const relativePath = usingComponents[comp]
-    const depCompPath = findAbsolutePath(dirname, relativePath)
-    deps[comp] = depCompPath
+    if (!relativePath.startsWith('plugin://')) {
+      const depCompPath = findAbsolutePath(dirname, relativePath)
+      deps[comp] = depCompPath
+    }
   })
   return {
     filePath,
@@ -42,7 +45,8 @@ const singleJsonAnalyzer = (filePath) => {
 
 const genCompDepsGraph = (entry) => {
   entry = suffixExtname(entry, ext)
-
+  if (!fs.existsSync(entry)) return {}
+  
   const entryModule = singleJsonAnalyzer(entry)
   const deps = entryModule.deps
   const depsGraph = {[entry]: deps}

@@ -6,6 +6,13 @@ const suffixExtname = (filePath, ext = 'js') => {
   return dir ? `${dir}${sep}${name}.${ext}` : `${name}.${ext}`
 }
 
+const removeExtname = (filePath) => {
+  const sep = path.sep
+  const {dir, name} = path.parse(filePath)
+  return dir ? `${dir}${sep}${name}` : `${name}`
+}
+
 module.exports = {
-  suffixExtname
+  suffixExtname,
+  removeExtname
 }

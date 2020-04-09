@@ -43,9 +43,8 @@ const singleModuleAnalyser = ({filePath, ext}) => {
 
 const genModuleDepsGraph = ({entry, ext, stack = []}) => {
   entry = suffixExtname(entry, ext)
-  if (stack.includes(entry)) {
-    return {}
-  }
+  if (!fs.existsSync(entry)) return {}
+  if (stack.includes(entry)) return {}
 
   stack.push(entry)
   const entryModule = singleModuleAnalyser({filePath: entry, ext})

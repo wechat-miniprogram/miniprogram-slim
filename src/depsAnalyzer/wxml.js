@@ -65,6 +65,8 @@ const singleWxmlAnalyser = (filePath) => {
 
 const genWxmlDepsGraph = (entry) => {
   entry = suffixExtname(entry, 'wxml')
+  if (!fs.existsSync(entry)) return {}
+
   const entryModule = singleWxmlAnalyser(entry)
   const {wxsDeps, wxmlDeps} = entryModule
   const depsGraph = {
@@ -87,9 +89,6 @@ const genWxsDepsMap = (wxmlDepsGraph) => {
   })
   return wxsMap
 }
-
-
-
 
 module.exports = {
   genWxmlDepsGraph,

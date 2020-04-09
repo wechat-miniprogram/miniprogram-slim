@@ -37,6 +37,8 @@ const singleWxssAnalyser = (filePath) => {
 
 const genWxssDepsGraph = (entry) => {
   entry = suffixExtname(entry, ext)
+  if (!fs.existsSync(entry)) return {}
+  
   const entryModule = singleWxssAnalyser(entry)
   const deps = entryModule.deps
   const depsGraph = {[entry]: deps}
