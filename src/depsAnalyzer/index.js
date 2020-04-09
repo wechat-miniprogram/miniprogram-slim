@@ -6,7 +6,7 @@ const inspect = require('util').inspect
 
 
 const {genWxmlDepsGraph, genWxsDepsMap} = require('./wxml')
-const {genEsModuleDepsGraph, getWxsModuleDepsGraph} = require('./esmodule')
+const {genEsModuleDepsGraph, genWxsModuleDepsGraph} = require('./esmodule')
 const {genCompDepsGraph, genCompDepsMap} = require('./component')
 const {genWxssDepsGraph} = require('./wxss')
 
@@ -29,7 +29,7 @@ const genAppDepsGraph = (app) => {
   const appCompDepsGraph = genCompDepsGraph(appJsonPath)
 
   result.app = {
-    esDeps: Object.keys(appEsModuleGraph),
+    esDeps: Object.keys(appEsModuleGraph.map),
     wxssDeps: Object.keys(appWxssDepsGraph),
     compDeps: genCompDepsMap(appCompDepsGraph)
   }
@@ -48,13 +48,13 @@ const genAppDepsGraph = (app) => {
       const wxsMap = genWxsDepsMap(wxmlDepsGraph)
       const wxsDeps = []
       Object.values(wxsMap).forEach(wxsEntry => {
-        const wxsDepsGraph = getWxsModuleDepsGraph(wxsEntry)
-        const perWxsDeps = Object.keys(wxsDepsGraph)
+        const wxsDepsGraph = genWxsModuleDepsGraph(wxsEntry)
+        const perWxsDeps = Object.keys(wxsDepsGraph.map)
         wxsDeps.push(...perWxsDeps)
       })
       const relativePath = path.join(root, page)
       result.subpackages[relativePath] = {
-        esDeps: Object.keys(esmoduleDepsGraph),
+        esDeps: Object.keys(esmoduleDepsGraph.map),
         wxmlDeps: Object.keys(wxmlDepsGraph),
         wxssDeps: Object.keys(wxssDepsGraph),
         compDeps: genCompDepsMap(compDepsGraph),
@@ -72,12 +72,13 @@ const genAppDepsGraph = (app) => {
     const wxsMap = genWxsDepsMap(wxmlDepsGraph)
     const wxsDeps = []
     Object.values(wxsMap).forEach(wxsEntry => {
-      const wxsDepsGraph = getWxsModuleDepsGraph(wxsEntry)
-      const perWxsDeps = Object.keys(wxsDepsGraph)
+      const wxsDepsGraph = genWxsModuleDepsGraph(wxsEntry)
+      const perWxsDeps = Object.keys(wxsDepsGraph.map)
       wxsDeps.push(...perWxsDeps)
     })
+    console.log('entry', entry, esmoduleDepsGraph)
     result.pages[entry] = {
-      esDeps: Object.keys(esmoduleDepsGraph),
+      esDeps: Object.keys(esmoduleDepsGraph.map),
       wxmlDeps: Object.keys(wxmlDepsGraph),
       wxssDeps: Object.keys(wxssDepsGraph),
       compDeps: genCompDepsMap(compDepsGraph),
@@ -85,7 +86,7 @@ const genAppDepsGraph = (app) => {
     }
   })
   console.log('****** deps analyzer ******')
-  console.log(inspect(result, {showHidden: false, depth: null}))
+  // console.log(inspect(result, {showHidden: false, depth: null}))
 }
 
 program

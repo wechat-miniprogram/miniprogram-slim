@@ -5,7 +5,7 @@ const traverse = require('@babel/traverse').default
 const {suffixExtname} = require('./util')
 const t = require('babel-types')
 
-const singleEsModuleAnalyser = (filePath, ext) => {
+const singleModuleAnalyser = (filePath, ext) => {
   const code = fs.readFileSync(filePath, 'utf-8')
   const ast = parser.parse(code, {sourceType: 'module'})
   const deps = {}
@@ -41,26 +41,78 @@ const singleEsModuleAnalyser = (filePath, ext) => {
   }
 }
 
-const getModuleDepsGraph = (entry, ext) => {
+const genModuleDepsGraph = ({entry, ext} = {}) => {
   entry = suffixExtname(entry, ext)
-  const entryModule = singleEsModuleAnalyser(entry, ext)
+  const entryModule = singleModuleAnalyser(entry, ext)
   const deps = entryModule.deps
   const depsGraph = {[entry]: deps}
   Object.values(deps).forEach(entry => {
-    Object.assign(depsGraph, getModuleDepsGraph(entry, ext))
+    Object.assign(depsGraph, genModuleDepsGraph({entry, ext}))
   })
   return depsGraph
 }
 
-const getWxsModuleDepsGraph = (entry) => {
-  return getModuleDepsGraph(entry, 'wxs')
+class Node {
+  constructor(path, id = 0, children = []) {
+    this.id = id
+    this.path = path
+    this.children = children
+  }
+
+  addChild(id) {
+    this.children.push(id)
+  }
+}
+
+class Graph {
+  constructor() {
+    this.nodes = []
+    this.map = {}
+    this.size = 0
+  }
+
+  addNode(node) {
+    node.id = this.size
+    this.map[node.path] = node.id
+    this.nodes.push(node)
+    this.size++
+  }
+}
+
+/**
+ * 格式化成邻接表
+ * @param {*} moduleDepsGraph 
+ */
+const formatModuleDepsGraph = (moduleDepsGraph) => {
+  const graph = new Graph()
+  Object.keys(moduleDepsGraph).forEach(entry => {
+    const node = new Node(entry)
+    graph.addNode(node)
+  })
+  Object.keys(moduleDepsGraph).forEach(entry => {
+    const entryId = graph.map[entry]
+    const deps = Object.values(moduleDepsGraph[entry])
+    deps.forEach(dep => {
+      const id = graph.map[dep]
+      graph.nodes[entryId].addChild(id)
+    })
+  })
+  return graph
+}
+
+const genWxsModuleDepsGraph = (entry) => {
+  const moduleDepsGraph = genModuleDepsGraph({entry, ext: 'wxs'})
+  const graph = formatModuleDepsGraph(moduleDepsGraph)
+  return graph
 }
 
 const genEsModuleDepsGraph = (entry) => {
-  return getModuleDepsGraph(entry, 'js')
+  const moduleDepsGraph = genModuleDepsGraph({entry, ext: 'js'})
+  const graph = formatModuleDepsGraph(moduleDepsGraph)
+  return graph
 }
 
 module.exports = {
   genEsModuleDepsGraph,
-  getWxsModuleDepsGraph
+  genWxsModuleDepsGraph
 }
