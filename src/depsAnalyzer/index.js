@@ -12,7 +12,7 @@ const {genWxssDepsGraph} = require('./wxss')
 
 const genAppDepsGraph = (app) => {
   // const appJsonPath = path.join(process.cwd(), app)
-  const appJsonPath = './app.json'
+  const appJsonPath = 'app.json'
 
   if (!fs.existsSync(appJsonPath)) {
     console.warn('Error: App.json is not exist')
@@ -87,7 +87,7 @@ const genAppDepsGraph = (app) => {
     }
   })
   console.log('****** deps analyzer ******')
-  // console.log(inspect(result, {showHidden: false, depth: null}))
+  console.log(inspect(result, {showHidden: false, depth: null}))
 }
 
 program
