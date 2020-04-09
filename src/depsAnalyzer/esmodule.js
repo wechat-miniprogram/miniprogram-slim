@@ -5,7 +5,7 @@ const traverse = require('@babel/traverse').default
 const {suffixExtname} = require('./util')
 const t = require('babel-types')
 
-const singleModuleAnalyser = (filePath, ext) => {
+const singleModuleAnalyser = ({filePath, ext}) => {
   const code = fs.readFileSync(filePath, 'utf-8')
   const ast = parser.parse(code, {sourceType: 'module'})
   const deps = {}
@@ -41,14 +41,20 @@ const singleModuleAnalyser = (filePath, ext) => {
   }
 }
 
-const genModuleDepsGraph = ({entry, ext} = {}) => {
+const genModuleDepsGraph = ({entry, ext, stack = []}) => {
   entry = suffixExtname(entry, ext)
-  const entryModule = singleModuleAnalyser(entry, ext)
+  if (stack.includes(entry)) {
+    return {}
+  }
+
+  stack.push(entry)
+  const entryModule = singleModuleAnalyser({filePath: entry, ext})
   const deps = entryModule.deps
   const depsGraph = {[entry]: deps}
   Object.values(deps).forEach(entry => {
-    Object.assign(depsGraph, genModuleDepsGraph({entry, ext}))
+    Object.assign(depsGraph, genModuleDepsGraph({entry, ext, stack}))
   })
+  stack.pop()
   return depsGraph
 }
 
@@ -101,13 +107,15 @@ const formatModuleDepsGraph = (moduleDepsGraph) => {
 }
 
 const genWxsModuleDepsGraph = (entry) => {
-  const moduleDepsGraph = genModuleDepsGraph({entry, ext: 'wxs'})
+  const stack = []
+  const moduleDepsGraph = genModuleDepsGraph({entry, ext: 'wxs', stack})
   const graph = formatModuleDepsGraph(moduleDepsGraph)
   return graph
 }
 
 const genEsModuleDepsGraph = (entry) => {
-  const moduleDepsGraph = genModuleDepsGraph({entry, ext: 'js'})
+  const stack = []
+  const moduleDepsGraph = genModuleDepsGraph({entry, ext: 'js', stack})
   const graph = formatModuleDepsGraph(moduleDepsGraph)
   return graph
 }

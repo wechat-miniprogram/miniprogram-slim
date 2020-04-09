@@ -76,7 +76,8 @@ const genAppDepsGraph = (app) => {
       const perWxsDeps = Object.keys(wxsDepsGraph.map)
       wxsDeps.push(...perWxsDeps)
     })
-    console.log('entry', entry, esmoduleDepsGraph)
+    console.log('entry', entry)
+    console.log(inspect(esmoduleDepsGraph, {showHidden: false, depth: null}))
     result.pages[entry] = {
       esDeps: Object.keys(esmoduleDepsGraph.map),
       wxmlDeps: Object.keys(wxmlDepsGraph),
