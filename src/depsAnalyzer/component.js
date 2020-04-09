@@ -58,7 +58,8 @@ const genCompDepsMap = (compDepsGraph) => {
   Object.values(compDepsGraph).forEach(item => {
     Object.assign(compMap, item)  
   })
-  return compMap
+  const compDeps = Object.values(compMap)
+  return compDeps
 }
 
 

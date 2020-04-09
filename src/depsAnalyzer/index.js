@@ -21,8 +21,8 @@ const genAppDepsGraph = (app) => {
 
   const result = {
     app: {},
-    pages: [],
-    subpackages: []
+    pages: {},
+    subpackages: {}
   }
   const appEsModuleGraph = genEsModuleDepsGraph(appJsonPath)
   const appWxssDepsGraph = genWxssDepsGraph(appJsonPath)
@@ -76,8 +76,8 @@ const genAppDepsGraph = (app) => {
       const perWxsDeps = Object.keys(wxsDepsGraph.map)
       wxsDeps.push(...perWxsDeps)
     })
-    console.log('entry', entry)
-    console.log(inspect(esmoduleDepsGraph, {showHidden: false, depth: null}))
+    // console.log('entry', entry)
+    // console.log(inspect(esmoduleDepsGraph, {showHidden: false, depth: null}))
     result.pages[entry] = {
       esDeps: Object.keys(esmoduleDepsGraph.map),
       wxmlDeps: Object.keys(wxmlDepsGraph),
