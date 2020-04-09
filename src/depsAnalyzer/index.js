@@ -3,105 +3,55 @@ const ora = require('ora')
 const program = require('commander')
 const path = require('path')
 const inspect = require('util').inspect
+const {createLog} = require('./util')
+const {analyzeComponent} = require('./analyzerComp')
+const {findUnusedFiles} = require('./unused')
+const log = createLog('@index')
 
-
-const {genWxmlDepsGraph, genWxsDepsMap} = require('./wxml')
-const {genEsModuleDepsGraph, genWxsModuleDepsGraph} = require('./esmodule')
-const {genCompDepsGraph, genCompDepsMap} = require('./component')
-const {genWxssDepsGraph} = require('./wxss')
-
-const {findAllComponent, findAllWxml} = require('./unused')
 
 /**
- * 1. 未处理组件 behavior 等依赖
- * 2. 忽略引用插件中的组件
- * 3. 编译后的小程序根目录进行查询
- * 
+ * 1. 忽略引用插件中的组件
+ * 2. 编译后的小程序根目录进行查询
  */
 const genAppDepsGraph = (app) => {
+  // log.setLevel('warn')
+
   // const appJsonPath = path.join(process.cwd(), app)
   const appJsonPath = 'app.json'
   const miniprogramRoot = path.dirname(appJsonPath)
-
-  // findAllComponent(miniprogramRoot)
-  // findAllWxml(miniprogramRoot)
-  // return
-
 
   if (!fs.existsSync(appJsonPath)) {
     console.warn('Error: App.json is not exist')
     return
   }
 
-  const result = {
+  const appDeps = {
     app: {},
     pages: {},
     subpackages: {}
   }
-  const appEsModuleGraph = genEsModuleDepsGraph(appJsonPath)
-  const appWxssDepsGraph = genWxssDepsGraph(appJsonPath)
-  const appCompDepsGraph = genCompDepsGraph(appJsonPath)
 
-  result.app = {
-    esDeps: Object.keys(appEsModuleGraph.map),
-    wxssDeps: Object.keys(appWxssDepsGraph),
-    compDeps: genCompDepsMap(appCompDepsGraph)
-  }
-
+  appDeps.app = analyzeComponent(appJsonPath)
   const appJson = fs.readJSONSync(appJsonPath)
-  const appRoot = path.dirname(appJsonPath)
   const subpackages = appJson.subpackages || appJson.subPackages || []
   subpackages.forEach(subpackage => {
     const {root, pages} = subpackage
     pages.forEach(page => {
-      const entry = path.join(appRoot, root, page)
-      const esmoduleDepsGraph = genEsModuleDepsGraph(entry)
-      const wxmlDepsGraph = genWxmlDepsGraph(entry)
-      const wxssDepsGraph = genWxssDepsGraph(entry)
-      const compDepsGraph = genCompDepsGraph(entry)
-      const wxsMap = genWxsDepsMap(wxmlDepsGraph)
-      const wxsDeps = []
-      Object.values(wxsMap).forEach(wxsEntry => {
-        const wxsDepsGraph = genWxsModuleDepsGraph(wxsEntry)
-        const perWxsDeps = Object.keys(wxsDepsGraph.map)
-        wxsDeps.push(...perWxsDeps)
-      })
+      const entry = path.join(miniprogramRoot, root, page)
       const relativePath = path.join(root, page)
-      result.subpackages[relativePath] = {
-        esDeps: Object.keys(esmoduleDepsGraph.map),
-        wxmlDeps: Object.keys(wxmlDepsGraph),
-        wxssDeps: Object.keys(wxssDepsGraph),
-        compDeps: genCompDepsMap(compDepsGraph),
-        wxsDeps
-      }
+      appDeps.subpackages[relativePath] = analyzeComponent(entry)
     })
   })
 
   const entrys = appJson.pages
   entrys.forEach(entry => {
-    const esmoduleDepsGraph = genEsModuleDepsGraph(entry)
-    const wxmlDepsGraph = genWxmlDepsGraph(entry)
-    const wxssDepsGraph = genWxssDepsGraph(entry)
-    const compDepsGraph = genCompDepsGraph(entry)
-    const wxsMap = genWxsDepsMap(wxmlDepsGraph)
-    const wxsDeps = []
-    Object.values(wxsMap).forEach(wxsEntry => {
-      const wxsDepsGraph = genWxsModuleDepsGraph(wxsEntry)
-      const perWxsDeps = Object.keys(wxsDepsGraph.map)
-      wxsDeps.push(...perWxsDeps)
-    })
-    // console.log('entry', entry)
-    // console.log(inspect(esmoduleDepsGraph, {showHidden: false, depth: null}))
-    result.pages[entry] = {
-      esDeps: Object.keys(esmoduleDepsGraph.map),
-      wxmlDeps: Object.keys(wxmlDepsGraph),
-      wxssDeps: Object.keys(wxssDepsGraph),
-      compDeps: genCompDepsMap(compDepsGraph),
-      wxsDeps
-    }
+    appDeps.pages[entry] = analyzeComponent(entry)
   })
-  console.log('****** deps analyzer ******')
-  console.log(inspect(result, {showHidden: false, depth: null}))
+  
+  const unused = findUnusedFiles(miniprogramRoot, appDeps)
+  console.log(unused)
+  // console.log('****** deps analyzer ******')
+  // console.log(inspect(appDeps, {showHidden: false, depth: null}))
 }
 
 program
