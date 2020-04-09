@@ -8,6 +8,7 @@ const {analyzeComponent} = require('./analyzerComp')
 const {findUnusedFiles} = require('./unused')
 const log = createLog('@index')
 const {setWeappNpmPath} = require('./component')
+const {genEsModuleDepsGraph} = require('./esmodule')
 
 
 /**
@@ -17,17 +18,21 @@ const {setWeappNpmPath} = require('./component')
 const genAppDepsGraph = (entry) => {
   // log.setLevel('warn')
 
-  // const appJsonPath = path.join(process.cwd(), app)
   const appJsonPath = entry || 'app.json'
-  const miniprogramRoot = path.dirname(appJsonPath)
-
   if (!fs.existsSync(appJsonPath)) {
-    console.warn('Error: App.json is not exist')
+    console.warn(`Error: ${entry} is not exist`)
+    return
+  }
+  const miniprogramRoot = path.dirname(appJsonPath)
+  const type = path.basename(appJsonPath, '.json')
+
+  if (type !== 'app' && type !== 'plugin') {
+    console.warn(`Error: entry must be app.json or plugin.json`)
     return
   }
 
   const appDeps = {
-    app: {},
+    app: {}, // 代表全局的含义
     pages: {},
     subpackages: {}
   }
@@ -35,6 +40,16 @@ const genAppDepsGraph = (entry) => {
   setWeappNpmPath(miniprogramRoot)
 
   appDeps.app = analyzeComponent(appJsonPath)
+
+  // 针对插件的特殊处理
+  if (type === 'plugin') {
+    const pluginJson = fs.readJSONSync(appJsonPath)
+    const main = pluginJson.main || 'index.js'
+    const entry = path.join(miniprogramRoot, main)
+    const esmoduleDepsGraph = genEsModuleDepsGraph(entry)
+    appDeps.app.esDeps = Object.keys(esmoduleDepsGraph.map) 
+  }
+
   const appJson = fs.readJSONSync(appJsonPath)
   const subpackages = appJson.subpackages || appJson.subPackages || []
   subpackages.forEach(subpackage => {
@@ -46,18 +61,16 @@ const genAppDepsGraph = (entry) => {
     })
   })
 
-  const pages = appJson.pages
+  const pages = appJson.pages || []
   pages.forEach(page => {
     const entry = path.join(miniprogramRoot, page)
     appDeps.pages[page] = analyzeComponent(entry)
   })
   // console.log(inspect(appDeps, {showHidden: false, depth: null}))
-
   
   const unused = findUnusedFiles(miniprogramRoot, appDeps)
-  // console.log('****** deps analyzer ******')
+  console.log('unsed files:')
   console.log(unused)
-  // console.log(inspect(appDeps, {showHidden: false, depth: null}))
 }
 
 program
