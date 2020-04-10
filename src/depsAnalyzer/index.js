@@ -15,7 +15,7 @@ const {genEsModuleDepsGraph} = require('./esmodule')
  * 1. 忽略引用插件中的组件
  * 2. 编译后的小程序根目录进行查询
  */
-const genAppDepsGraph = (entry) => {
+const genAppDepsGraph = (entry, cli) => {
   // log.setLevel('warn')
 
   const appJsonPath = entry || 'app.json'
@@ -66,7 +66,9 @@ const genAppDepsGraph = (entry) => {
     const entry = path.join(miniprogramRoot, page)
     appDeps.pages[page] = analyzeComponent(entry)
   })
-  // console.log(inspect(appDeps, {showHidden: false, depth: null}))
+  if (cli.deps) {
+    console.log(inspect(appDeps, {showHidden: false, depth: null}))
+  }
   
   const unused = findUnusedFiles(miniprogramRoot, appDeps)
   console.log('unsed files:')
@@ -76,4 +78,5 @@ const genAppDepsGraph = (entry) => {
 program
   .command('analyzer [entry]')
   .description('Analyze dependencies of source code')
+  .option('-d, --deps', 'show dependencies')
   .action(genAppDepsGraph)
