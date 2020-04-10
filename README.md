@@ -2,7 +2,7 @@
 
 ## 安装
 
-`npm i` 安装依赖后，会注册全局指令 `slim`，通过 `slim -h` 查看具体用法。
+`npm i` 安装依赖后执行 `npm lint` 会注册全局指令 `slim`，通过 `slim -h` 查看具体用法。
 
 ```
 Usage: slim <command>
@@ -28,6 +28,8 @@ Commands:
 ### 文件依赖分析
 
 入口文件为 `app.json` 或 `plugin.json` 的路径，对小程序/插件实际使用到的 `wxml`、`wxss`、`wxs`、`js` 以及组件进行依赖分析。
+
+`js` 文件的依赖，支持 `import` 和 `require` 导入的模块，但运行时计算的路径如 `require(a + b)` 将被忽略。
 
 ```js
 slim analyzer -d app.json
