@@ -14,19 +14,18 @@ const {genEsModuleDepsGraph} = require('./esmodule')
  * 1. 忽略引用插件中的组件
  * 2. 编译后的小程序根目录进行查询
  */
-const genAppDepsGraph = (entry = 'app.json', cli) => {
+const genAppDepsGraph = (root, cli) => {
   // log.setLevel('warn')
-  if (!fs.existsSync(entry)) {
-    console.warn(`Error: ${entry} is not exist`)
-    return
-  }
 
-  const miniprogramRoot = path.dirname(entry)
-  const basename = path.basename(entry)
-  const appJsonPath = path.join(miniprogramRoot, basename)
+  // 默认当前目录为小程序根目录
+  const miniprogramRoot = root || './'
+  const ignore = (cli.ignore || '').split(',')
+  const type = cli.type || 'app'
 
-  if (basename !== 'app.json' && basename !== 'plugin.json') {
-    console.warn(`Error: entry must be app.json or plugin.json`)
+  const entry = type === 'app' ? 'app.json' : 'plugin.json'
+  const appJsonPath = path.join(miniprogramRoot, entry)
+  if (!fs.existsSync(appJsonPath)) {
+    console.warn(`Error: ${appJsonPath} is not exist`)
     return
   }
 
@@ -41,7 +40,7 @@ const genAppDepsGraph = (entry = 'app.json', cli) => {
   appDeps.app = analyzeComponent(appJsonPath)
 
   // 针对插件的特殊处理
-  if (basename === 'plugin.json') {
+  if (type === 'plugin') {
     const pluginJson = fs.readJSONSync(appJsonPath)
     const main = pluginJson.main || 'index.js'
     const entry = path.join(miniprogramRoot, main)
@@ -66,7 +65,6 @@ const genAppDepsGraph = (entry = 'app.json', cli) => {
     appDeps.pages[page] = analyzeComponent(entry)
   })
 
-  const ignore = (cli.ignore || '').split(',')
   const {projectConfig, unusedCollection} = findUnusedFiles({
     miniprogramRoot,
     appDeps,
@@ -84,8 +82,9 @@ const genAppDepsGraph = (entry = 'app.json', cli) => {
 }
 
 program
-  .command('analyzer [entry]')
+  .command('analyzer [root]')
   .description('Analyze dependencies of source code')
   .option('-o, --output [path]', 'path to file for analyzer', './depsAnalyzer.json')
+  .option('-t, --type [weappType]', 'app or plugin', 'app')
   .option('-i, --ignore <glob>', 'glob pattern for files what should be excluded')
   .action(genAppDepsGraph)
