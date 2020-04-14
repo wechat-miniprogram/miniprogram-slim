@@ -2,7 +2,7 @@
 
 ## 安装
 
-`npm i` 安装依赖后执行 `npm lint` 会注册全局指令 `slim`，通过 `slim -h` 查看具体用法。
+`npm i` 安装依赖后执行 `npm link` 会注册全局指令 `slim`，通过 `slim -h` 查看具体用法。
 
 ```
 Usage: slim <command>
