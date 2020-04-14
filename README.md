@@ -27,7 +27,18 @@ Commands:
 
 ### 文件依赖分析
 
-入口文件为 `app.json` 或 `plugin.json` 的路径，对小程序/插件实际使用到的 `wxml`、`wxss`、`wxs`、`js` 以及组件进行依赖分析。
+```js
+Usage: slim analyzer [options] [entry]
+
+Analyze dependencies of source code
+
+Options:
+  -o, --output [path]  path to file for analyzer (default:"./depsAnalyzer.json")
+  -i, --ignore <glob>  glob pattern for files what should be excluded
+  -h, --help           output usage information
+```
+
+入口文件为 `app.json` 或 `plugin.json` 的路径，对小程序/插件实际使用到的 `wxml`、`wxss`、`wxs`、`js`、`json` 以及组件进行依赖分析。
 
 `js` 文件的依赖，支持 `import` 和 `require` 导入的模块，但运行时计算的路径如 `require(a + b)` 将被忽略。
 
@@ -38,13 +49,14 @@ slim analyzer -d app.json
 #### 文件依赖结构
 
 ```js
-appDeps = {
+appDependencies = {
   app: {
     esDeps: [],
     wxmlDeps: [],
     wxssDeps: [],
     compDeps: [],
-    wxsDeps: []
+    wxsDeps: [],
+    jsonDeps: []
   },
   pages: {
     <!-- key 为 page 路径 -->
@@ -58,17 +70,15 @@ appDeps = {
 #### 无用文件结构
 
 ```js
-unusedFiles = {
+unusedCollection = {
   js: [],
   comps: [],
   wxml: [],
   wxs: [],
-  wxss: []
+  wxss: [],
+  json: []
 }
 ```
-
-无用文件分析时，`wxml` 等不包括自定义组件的内容，统一到 `comps` 中。
-
 
 #### 可能的用途
 

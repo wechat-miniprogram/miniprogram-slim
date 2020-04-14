@@ -1,4 +1,5 @@
 const path = require('path')
+const inspect = require('util').inspect
 
 const createLog = (module) => {
   const manager = require('simple-node-logger').createLogManager({
@@ -24,9 +25,14 @@ const unique = (arr = []) => {
   return Array.from(new Set(arr))
 }
 
+const printObject = (Object) => {
+  console.log(inspect(Object, {showHidden: false, depth: null}))
+}
+
 module.exports = {
   suffixExtname,
   removeExtname,
   createLog,
-  unique
+  unique,
+  printObject
 }
