@@ -58,8 +58,12 @@ const genAppDepsGraph = (root, cli) => {
       appDeps.subpackages[relativePath] = analyzeComponent(entry)
     })
   })
-
-  const pages = appJson.pages || []
+  let pages
+  if (type === 'app') {
+    pages = appJson.pages || []
+  } else {
+    pages = Object.values(appJson.pages || {})
+  }
   pages.forEach(page => {
     const entry = path.join(miniprogramRoot, page)
     appDeps.pages[page] = analyzeComponent(entry)
