@@ -43,7 +43,8 @@ Options:
 `js` 文件的依赖，支持 `import` 和 `require` 导入的模块，但运行时计算的路径如 `require(a + b)` 将被忽略。
 
 ```js
-slim analyzer -i "miniprogram_npm/**" app.json
+// root 为 miniprogramRoot 或 pluginRoot 目录
+slim analyzer -i "miniprogram_npm/**"
 ```
 
 #### 文件依赖结构
