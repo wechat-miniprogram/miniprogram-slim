@@ -2,12 +2,13 @@ const fs = require('fs-extra')
 const ora = require('ora')
 const program = require('commander')
 const path = require('path')
-const {createLog, printObject, genPackOptions} = require('./util')
-const {analyzeComponent} = require('./analyzerComp')
-const {findUnusedFiles} = require('./unused')
-const {genEsModuleDepsGraph} = require('./esmodule')
 const shell = require('shelljs')
 const perf = require('execution-time')()
+const {genData} = require('./genData')
+const {createLog, printObject, genPackOptions} = require('./util')
+const {analyzeComponent} = require('./analyzerComp')
+const {findUnusedFiles, findAllComponentDeps,findAllFileInfo} = require('./unused')
+const {genEsModuleDepsGraph} = require('./esmodule')
 
 
 /**
@@ -92,19 +93,39 @@ const genAppDepsGraph = (cli) => {
   //  无用文件
   perf.start()
   spinner.start('find unusedFiles')
-  const unusedFiles = findUnusedFiles({dependencies, ignore})
+  const allFileInfo = findAllFileInfo()
+  const componentDeps = findAllComponentDeps(allFileInfo)
+  const unusedFiles = findUnusedFiles({
+    allFileInfo,
+    componentDeps,
+    dependencies,
+    ignore
+  })
   spinner.succeed(`find unusedFiles success, used ${Math.ceil(perf.stop().time)}ms`)
+  
+  // 可视化数据
+  perf.start()
+  spinner.start('generate file size data')
+  const data = genData({
+    dependencies,
+    componentDeps,
+    allFileInfo
+  })
+
+  spinner.succeed(`generate file size data success, used ${Math.ceil(perf.stop().time)}ms`)
 
   // 生成打包配置
   perf.start()
   spinner.start('generate packOptions')
   const packOptions = genPackOptions(unusedFiles, compileType === 'plugin' ? pluginRoot : '')
+  spinner.succeed(`generate packOptions success, used ${Math.ceil(perf.stop().time)}ms`)
+
   const result = {
     packOptions,
     unusedFiles,
-    dependencies
+    dependencies,
+    data
   }
-  spinner.succeed(`generate packOptions success, used ${Math.ceil(perf.stop().time)}ms`)
 
   // 输出结果
   spinner.start('write output')

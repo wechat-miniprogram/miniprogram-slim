@@ -36,10 +36,12 @@ const findAllFileInfo = () => {
     const size = +(fs.statSync(file).size / 1000).toFixed(2) // kB
     const ext = path.extname(file)
     const name = path.basename(file, ext)
+    const basename = path.basename(file)
     allFileInfo[file] = {
       name,
       ext,
-      size
+      size,
+      basename
     }
   })
   return allFileInfo
@@ -55,20 +57,28 @@ const findIgnoreFils = (ignore = []) => {
   return uniqueIgnoreFiles
 }
 
-const findUnusedFiles = ({dependencies, ignore}) => {
-  // 所有文件
-  const allFileInfo = findAllFileInfo()
-  const allFiles = Object.keys(allFileInfo)
-  const allFileSet = new Set(allFiles)
-
+const findAllComponentDeps = (allFileInfo) => {
   const components = findAllComponent()
   const componentDeps = {}
-  const componentSizes = {}
   components.forEach(comp => {
-    componentDeps[comp] = analyzeComponent(comp)
-    componentSizes[comp] = computeComponentSize(componentDeps[comp], allFileInfo)
+    const deps = analyzeComponent(comp)
+    const size = computeComponentSize(deps, allFileInfo)
+    deps.size = size
+    componentDeps[comp] = deps
   })
+  return componentDeps
+}
 
+const findUnusedFiles = ({
+  allFileInfo,
+  componentDeps,
+  dependencies,
+  ignore
+}) => {
+  // 所有文件
+  const allFiles = Object.keys(allFileInfo)
+  const allFileSet = new Set(allFiles)
+  
   const {app, pages, subpackages} = dependencies
   const deps = [app, ...Object.values(pages), ...Object.values(subpackages)]
   const usedCompSet = new Set()
@@ -81,18 +91,10 @@ const findUnusedFiles = ({dependencies, ignore}) => {
     }
     componentDeps[comp] && deps.push(componentDeps[comp])
   })
-  // // 未使用的组件
+  // 未使用的组件
   // const allCompSet = new Set(components)
   // const unusedCompSet = difference(allCompSet, usedCompSet)
-  // const allCompFiles = []
-  // components.forEach(item => {
-  //   allCompFiles.push(...item.wxmlDeps, ...item.wxssDeps, ...item.wxsDeps, ...item.esDeps, ...item.jsonDeps)
-  // })
-  // const allCompFileSet = new Set(allCompFiles)
-
-  // const allFilesExceptComp = allFiles.filter(file => !allCompFileSet.has(file))
-  // const allFileExceptCompSet = new Set(allFilesExceptComp)
-
+ 
   // 已使用的文件
   const usedFiles = []
   deps.forEach(item => {
@@ -111,5 +113,7 @@ const findUnusedFiles = ({dependencies, ignore}) => {
 }
 
 module.exports = {
-  findUnusedFiles
+  findUnusedFiles,
+  findAllComponentDeps,
+  findAllFileInfo
 }
