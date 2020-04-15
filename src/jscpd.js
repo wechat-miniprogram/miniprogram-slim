@@ -12,7 +12,6 @@ const jscpdAction = (dir, cli) => {
   }
   const ignore = cli.ignore ? `-i "${cli.ignore}" ` : ''
   const command = `${path2JscpdBin} -c ${config} -o ${cli.output} ${ignore} ${cli.blame ? '-b ' : ''} ${dir} `
-  console.log('command', command)
   shell.exec(command)
 }
 

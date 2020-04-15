@@ -21,16 +21,35 @@ const analyzeComponent = (entry) => {
   let jsonPath = suffixExtname(entry, 'json')
   jsonPath = fs.existsSync(jsonPath) ? jsonPath : ''
 
+  const esDeps = Object.keys(esmoduleDepsGraph.map)
+  const wxmlDeps = Object.keys(wxmlDepsGraph)
+  const wxssDeps = Object.keys(wxssDepsGraph)
+  const compDeps = genCompDepsMap(compDepsGraph)
+  const jsonDeps = [jsonPath]
+  const files = [...wxmlDeps, ...wxssDeps, ...wxsDeps, ...esDeps, ...jsonDeps]
+
   return {
-    esDeps: Object.keys(esmoduleDepsGraph.map),
-    wxmlDeps: Object.keys(wxmlDepsGraph),
-    wxssDeps: Object.keys(wxssDepsGraph),
-    compDeps: genCompDepsMap(compDepsGraph),
+    esDeps,
+    wxmlDeps,
+    wxssDeps,
+    compDeps,
     wxsDeps,
-    jsonDeps: [jsonPath]
+    jsonDeps,
+    files
   }
 }
 
+const computeComponentSize = (compDep, allFileInfo) => {
+  let totalSize = 0
+  compDep.files.forEach(file => {
+    const size = allFileInfo[file].size
+    totalSize += size
+  })
+  return totalSize
+}
+
+
 module.exports = {
-  analyzeComponent
+  analyzeComponent,
+  computeComponentSize
 }

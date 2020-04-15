@@ -4,26 +4,28 @@ const fs = require('fs-extra')
 const {suffixExtname} = require('./util')
 const ext = 'json'
 
-let weappNpmPath = ''
+let weappNpmPath = null
+let hasSearchNpm = false
 
-const setWeappNpmPath = (miniprogramRoot) => {
+const setWeappNpmPath = () => {
+  hasSearchNpm = true
   const weappNpmGlob = glob.sync('**/miniprogram_npm/', {
-    ignore: '**/node_modules/**',
-    cwd: miniprogramRoot
+    ignore: '**/node_modules/**'
   })
-  if (weappNpmGlob[0]) {
-    weappNpmPath = path.join(miniprogramRoot, weappNpmGlob[0])  
-  }
+  weappNpmPath = weappNpmGlob[0] || null
 }
 
 const findAbsolutePath = (root, relativePath) => {
-  // 相对/绝对路径
+  // 相对、绝对路径
   const compPath = path.join(root, relativePath)
   if (fs.existsSync(suffixExtname(compPath, ext))) {
     return compPath
   }
 
   // 从 miniprogram_npm 中查找
+  if (!hasSearchNpm) {
+    setWeappNpmPath()
+  }
   if (weappNpmPath) {
     const weappCompPath = path.join(weappNpmPath, relativePath)
     if (fs.existsSync(suffixExtname(weappCompPath, ext))) {
@@ -43,7 +45,9 @@ const singleJsonAnalyzer = (filePath) => {
     const relativePath = usingComponents[comp]
     if (!relativePath.startsWith('plugin://')) {
       const depCompPath = findAbsolutePath(dirname, relativePath)
-      deps[comp] = depCompPath
+      if (depCompPath) {
+        deps[comp] = depCompPath
+      }
     }
   })
   return {

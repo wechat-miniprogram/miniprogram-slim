@@ -29,10 +29,40 @@ const printObject = (Object) => {
   console.log(inspect(Object, {showHidden: false, depth: null}))
 }
 
+const genPackOptions = (unusedFiles, pluginRoot) => {
+  const map = {}
+  unusedFiles.forEach(file => {
+    if (pluginRoot) {
+      file = path.join(pluginRoot, file)
+    }
+    const ext = path.extname(file).replace('.', '')
+    const name = removeExtname(file)
+    if (!map[name]) map[name] = []
+    map[name].push(ext)
+  })
+  const packOptions = {ignore:[]}
+  Object.keys(map).forEach(name => {
+    const exts = map[name]
+    if (exts.length === 1) {
+      packOptions.ignore.push({
+        type: 'file',
+        value: `${name}/${exts[0]}`
+      })
+    } else {
+      packOptions.ignore.push({
+        type: 'glob',
+        value: `${name}.@(${exts.join('|')})`
+      })
+    }
+  })
+  return packOptions
+}
+
 module.exports = {
   suffixExtname,
   removeExtname,
   createLog,
   unique,
-  printObject
+  printObject,
+  genPackOptions
 }

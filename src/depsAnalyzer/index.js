@@ -2,93 +2,124 @@ const fs = require('fs-extra')
 const ora = require('ora')
 const program = require('commander')
 const path = require('path')
-const {createLog, printObject} = require('./util')
+const {createLog, printObject, genPackOptions} = require('./util')
 const {analyzeComponent} = require('./analyzerComp')
 const {findUnusedFiles} = require('./unused')
-const log = createLog('@index')
-const {setWeappNpmPath} = require('./component')
 const {genEsModuleDepsGraph} = require('./esmodule')
+const shell = require('shelljs')
+const perf = require('execution-time')()
 
 
 /**
  * 1. 忽略引用插件中的组件
- * 2. 编译后的小程序根目录进行查询
+ * 2. 当前目录为 project.config.json 目录
  */
-const genAppDepsGraph = (root, cli) => {
+const genAppDepsGraph = (cli) => {
   // log.setLevel('warn')
 
-  // 默认当前目录为小程序根目录
-  const miniprogramRoot = root || './'
-  const ignore = (cli.ignore || '').split(',')
-  const type = cli.type || 'app'
-
-  const entry = type === 'app' ? 'app.json' : 'plugin.json'
-  const appJsonPath = path.join(miniprogramRoot, entry)
-  if (!fs.existsSync(appJsonPath)) {
-    console.warn(`Error: ${appJsonPath} is not exist`)
+  const projectConfigPath = './project.config.json'
+  if (!fs.existsSync(projectConfigPath)) {
+    console.warn(`Error: project.config.json is not exist`)
     return
   }
 
-  const appDeps = {
-    app: {}, // 代表全局的含义
+  const projectConfig = fs.readJSONSync(projectConfigPath)
+  const {
+    compileType = 'miniprogram',
+    miniprogramRoot = './',
+    pluginRoot = 'plugin'
+  } = projectConfig
+
+  const cwd = process.cwd()
+  const ignore = cli.ignore ? cli.ignore.split(',') : []
+  const root = compileType === 'miniprogram' ? miniprogramRoot : pluginRoot
+
+  // 所有的操作均在代码根目录进行
+  shell.cd(root)
+  const entryPath = compileType === 'miniprogram' ? 'app.json' : 'plugin.json'
+
+  const entryJson = fs.readJSONSync(entryPath)
+  const pages = compileType === 'miniprogram' ? entryJson.pages : Object.values(entryJson.pages || {})
+
+  const dependencies = {
+    app: {},
     pages: {},
     subpackages: {}
   }
-  // 设置正确的npm包路径
-  setWeappNpmPath(miniprogramRoot)
 
-  appDeps.app = analyzeComponent(appJsonPath)
+  perf.start('global')
+  perf.start()
+  const spinner = ora(`analyze ${entryPath}`).start()
+  // app plugin 处理
+  dependencies.app = analyzeComponent(entryPath)
 
   // 针对插件的特殊处理
-  if (type === 'plugin') {
-    const pluginJson = fs.readJSONSync(appJsonPath)
-    const main = pluginJson.main || 'index.js'
-    const entry = path.join(miniprogramRoot, main)
-    const esmoduleDepsGraph = genEsModuleDepsGraph(entry)
-    appDeps.app.esDeps = Object.keys(esmoduleDepsGraph.map) 
+  if (compileType === 'plugin') {
+    const mainPath = entryJson.main || 'index.js'
+    const esmoduleDepsGraph = genEsModuleDepsGraph(mainPath)
+    dependencies.app.esDeps = Object.keys(esmoduleDepsGraph.map) 
+    dependencies.app.files.push(...dependencies.app.esDeps)
   }
+  spinner.succeed(`analyze ${entryPath} success, used ${Math.ceil(perf.stop().time)}ms`)
 
-  const appJson = fs.readJSONSync(appJsonPath)
-  const subpackages = appJson.subpackages || appJson.subPackages || []
-  subpackages.forEach(subpackage => {
-    const {root, pages} = subpackage
-    pages.forEach(page => {
-      const entry = path.join(miniprogramRoot, root, page)
-      const relativePath = path.join(root, page)
-      appDeps.subpackages[relativePath] = analyzeComponent(entry)
+  // 分包处理
+  if (compileType === 'miniprogram') {
+    perf.start()
+    spinner.start('analyzer subpackages')
+
+    const subpackages = entryJson.subpackages || entryJson.subPackages || []
+    subpackages.forEach(subpackage => {
+      const {root, pages} = subpackage
+      pages.forEach(page => {
+        const entry = path.join(root, page)
+        dependencies.subpackages[entry] = analyzeComponent(entry)
+      })
     })
-  })
-  let pages
-  if (type === 'app') {
-    pages = appJson.pages || []
-  } else {
-    pages = Object.values(appJson.pages || {})
+
+    spinner.succeed(`analyzer subpackages success, used ${Math.ceil(perf.stop().time)}ms`)
   }
+
+  // 页面处理
+  perf.start()
+  spinner.start('analyzer pages')
+
   pages.forEach(page => {
-    const entry = path.join(miniprogramRoot, page)
-    appDeps.pages[page] = analyzeComponent(entry)
+    dependencies.pages[page] = analyzeComponent(page)
   })
+  spinner.succeed(`analyzer pages success, used ${Math.ceil(perf.stop().time)}ms`)
 
-  const {projectConfig, unusedCollection} = findUnusedFiles({
-    miniprogramRoot,
-    appDeps,
-    ignore
-  })
 
+  //  无用文件
+  perf.start()
+  spinner.start('find unusedFiles')
+  const unusedFiles = findUnusedFiles({dependencies, ignore})
+  spinner.succeed(`find unusedFiles success, used ${Math.ceil(perf.stop().time)}ms`)
+
+  // 生成打包配置
+  perf.start()
+  spinner.start('generate packOptions')
+  const packOptions = genPackOptions(unusedFiles, compileType === 'plugin' ? pluginRoot : '')
   const result = {
-    projectConfig,
-    unusedCollection,
-    appDependencies: appDeps
+    packOptions,
+    unusedFiles,
+    dependencies
   }
+  spinner.succeed(`generate packOptions success, used ${Math.ceil(perf.stop().time)}ms`)
 
-  const output = path.resolve('./', cli.output)
-  fs.writeFileSync(output, JSON.stringify(result, null, 2))
+  // 输出结果
+  spinner.start('write output')
+  shell.cd(cwd)
+  const outputDir = cli.output 
+  const outputJsonFile = path.join(outputDir, 'result.json')
+  fs.ensureDirSync(outputDir)
+  fs.writeFileSync(outputJsonFile, JSON.stringify(result, null, 2))
+
+  spinner.succeed(`finish, everything looks good, total used ${Math.ceil(perf.stop('global').time)}ms`)
 }
 
 program
-  .command('analyzer [root]')
+  .command('analyzer')
   .description('Analyze dependencies of source code')
-  .option('-o, --output [path]', 'path to file for analyzer', './depsAnalyzer.json')
-  .option('-t, --type [weappType]', 'app or plugin', 'app')
+  .option('-o, --output [dir]', 'path to directory for analyzer', './analyzer')
   .option('-i, --ignore <glob>', 'glob pattern for files what should be excluded')
   .action(genAppDepsGraph)
