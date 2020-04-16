@@ -5,7 +5,7 @@ const path = require('path')
 const shell = require('shelljs')
 const perf = require('execution-time')()
 const {genData} = require('./genData')
-const {createLog, printObject, genPackOptions} = require('./util')
+const {createLog, printObject, genPackOptions, drawTable} = require('./util')
 const {analyzeComponent} = require('./analyzerComp')
 const {findUnusedFiles, findAllComponentDeps,findAllFileInfo} = require('./unused')
 const {genEsModuleDepsGraph} = require('./esmodule')
@@ -103,6 +103,12 @@ const genAppDepsGraph = (cli) => {
   })
   spinner.succeed(`find unusedFiles success, used ${Math.ceil(perf.stop().time)}ms`)
   
+  // 生成打包配置
+  perf.start()
+  spinner.start('generate packOptions')
+  const packOptions = genPackOptions(unusedFiles, compileType === 'plugin' ? pluginRoot : '')
+  spinner.succeed(`generate packOptions success, used ${Math.ceil(perf.stop().time)}ms`)
+
   // 可视化数据
   perf.start()
   spinner.start('generate file size data')
@@ -111,20 +117,13 @@ const genAppDepsGraph = (cli) => {
     componentDeps,
     allFileInfo
   })
-
   spinner.succeed(`generate file size data success, used ${Math.ceil(perf.stop().time)}ms`)
 
-  // 生成打包配置
-  perf.start()
-  spinner.start('generate packOptions')
-  const packOptions = genPackOptions(unusedFiles, compileType === 'plugin' ? pluginRoot : '')
-  spinner.succeed(`generate packOptions success, used ${Math.ceil(perf.stop().time)}ms`)
-
   const result = {
+    data,
     packOptions,
     unusedFiles,
     dependencies,
-    data
   }
 
   // 输出结果
@@ -134,8 +133,8 @@ const genAppDepsGraph = (cli) => {
   const outputJsonFile = path.join(outputDir, 'result.json')
   fs.ensureDirSync(outputDir)
   fs.writeFileSync(outputJsonFile, JSON.stringify(result, null, 2))
-
   spinner.succeed(`finish, everything looks good, total used ${Math.ceil(perf.stop('global').time)}ms`)
+  drawTable(data)
 }
 
 program

@@ -10,6 +10,8 @@ const genPageCompData = (comps = [], componentDeps) => {
       absolutePath: comp
     })
   }
+  children.sort((a, b) => b.size - a.size)
+
   return {
     name: 'components',
     size: +totalSize.toFixed(2),
@@ -22,26 +24,34 @@ const genFileData = (file, allFileInfo) => {
   return {
     name: fileInfo.basename,
     size: fileInfo.size,
-    absolutePath: file,
+    absolutePath: file
   }
 }
 
 const genPageData = ({name, pageDeps, componentDeps, allFileInfo}) => {
-  let totalSize = 0
-  const children = []
   const comps = pageDeps.compDeps
   const compData = genPageCompData(comps, componentDeps)
+
+  const children = []
+  let totalSize = 0
   const files = pageDeps.files.sort()
   files.forEach(file => {
     const fileData = genFileData(file, allFileInfo)
     children.push(fileData)
     totalSize += fileData.size
   })
-  children.push(compData)
-  return {
-    name,
+  children.sort((a, b) => b.size - a.size)
+
+  const pages = {
+    name: 'pages',
     size: +totalSize.toFixed(2),
     children
+  }
+
+  return {
+    name,
+    size: +(pages.size + compData.size).toFixed(2),
+    children: [pages, compData]
   }
 }
 
@@ -50,7 +60,7 @@ const genModuleData = ({pages, componentDeps, allFileInfo}) => {
   let pagesTotalSize = 0
   for (const page of Object.keys(pages)) {
     const pageData = genPageData({
-      page,
+      name: page,
       componentDeps,
       allFileInfo,
       pageDeps: pages[page]
@@ -58,6 +68,8 @@ const genModuleData = ({pages, componentDeps, allFileInfo}) => {
     children.push(pageData)
     pagesTotalSize += pageData.size
   }
+  children.sort((a, b) => b.size - a.size)
+
   return {
     children,
     size: +pagesTotalSize.toFixed(2)
@@ -85,14 +97,12 @@ const genData = ({dependencies, componentDeps, allFileInfo}) => {
   }
 
   const appData = genModuleData({
-    pages: {1: app},
+    pages: {app},
     componentDeps,
     allFileInfo
   })
 
-  data.app.children = appData.children[0]
-  data.app.size = appData.children[0].size
-
+  data.app = appData.children[0]
   data.pages = Object.assign(data.pages, genModuleData({
     pages,
     componentDeps,
@@ -104,7 +114,12 @@ const genData = ({dependencies, componentDeps, allFileInfo}) => {
     componentDeps,
     allFileInfo
   }))
-  return Object.values(data)
+
+  // if (!data.subpackages.size) delete data.subpackages
+  // if (!data.pages.size) delete data.pages
+  // if (!data.app.size) delete data.app
+  
+  return data
 }
 
 module.exports = {

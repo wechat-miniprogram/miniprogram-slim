@@ -1,5 +1,9 @@
 const path = require('path')
 const inspect = require('util').inspect
+const Table = require('cli-table3')
+const colors = require('colors')
+
+
 
 const createLog = (module) => {
   const manager = require('simple-node-logger').createLogManager({
@@ -58,11 +62,71 @@ const genPackOptions = (unusedFiles, pluginRoot) => {
   return packOptions
 }
 
+const drawTable = (data) => {
+  const items = [
+    ...data.pages.children,
+    ...data.subpackages.children
+  ]
+  items.sort((a, b) => b.size - a.size)
+    items.unshift(data.app)
+
+  const table = new Table({
+    head: ['page', 'file & comp', 'stat size (kB)', 'percent', 'totalSize (kB)'],
+    style: {}
+  })
+
+
+  items.forEach(item => {
+    const name = item.name
+    const totalSize = item.size
+    const pages = item.children[0].children || []
+    const components = item.children[1].children || []
+    const rows = pages.length + components.length
+    table.push([{
+      rowSpan: rows,
+      content: name,
+      vAlign: 'center'
+    }, {
+      content: pages[0].name
+    }, {
+      content: pages[0].size
+    }, {
+      content: (pages[0].size / totalSize * 100).toFixed(2) + '%'
+    }, {
+      rowSpan: rows,
+      content: totalSize,
+      vAlign: 'center'
+    }])
+
+    for (let i = 1; i < pages.length; i++) {
+      table.push([{
+        content: pages[i].name
+      }, {
+        content: pages[i].size
+      }, {
+        content: (pages[i].size / totalSize * 100).toFixed(2) + '%'
+      }])
+    }
+
+    for (let i = 0; i < components.length; i++) {
+      table.push([{
+        content: colors.green(components[i].name)
+      }, {
+        content: components[i].size
+      }, {
+        content: (components[i].size / totalSize * 100).toFixed(2) + '%'
+      }])
+    }
+  })
+  console.log(table.toString())
+}
+
 module.exports = {
   suffixExtname,
   removeExtname,
   createLog,
   unique,
   printObject,
-  genPackOptions
+  genPackOptions,
+  drawTable
 }

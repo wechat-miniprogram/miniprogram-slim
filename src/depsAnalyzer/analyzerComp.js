@@ -45,6 +45,7 @@ const computeComponentSize = (compDep, allFileInfo) => {
     const size = allFileInfo[file].size
     totalSize += size
   })
+  
   return +totalSize.toFixed(2)
 }
 

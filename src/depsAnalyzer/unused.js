@@ -4,26 +4,36 @@ const fs = require('fs-extra')
 const {removeExtname, printObject} = require('./util')
 const {difference} = require('./setOperation')
 const {analyzeComponent, computeComponentSize} = require('./analyzerComp')
+const {findAbsolutePath} = require('./component')
 
 const defaultIgnores = [
   '**/node_modules/**',
-  '**/package.json',
-  '**/package-lock.json',
   'project.config.json',
   '**/sitemap.json'
 ]
 
 const findAllComponent = () => {
   const jsonFiles = glob.sync('**/*.json', {ignore: [...defaultIgnores]})
-  const components = []
+  const components = new Set()
 
   for (let filePath of jsonFiles) {
     const content = fs.readJSONSync(filePath)
     if (content.component === true) {
-      components.push(removeExtname(filePath))
+      components.add(removeExtname(filePath))
+    }
+
+    if (content.usingComponents) {
+      const usingComps = Object.values(content.usingComponents)
+      usingComps.forEach(comp => {
+        if (!comp.startsWith('plugin://')) {
+          const dirname = path.dirname(filePath)
+          const compPath = findAbsolutePath(dirname, comp)
+          if (compPath) components.add(compPath)
+        }
+      })
     }
   }
-  return components
+  return Array.from(components)
 }
 
 const findAllFileInfo = () => {
@@ -86,9 +96,6 @@ const findUnusedFiles = ({
     item.compDeps.forEach(comp => usedCompSet.add(comp))
   })
   usedCompSet.forEach(comp => {
-    if (!componentDeps[comp]) {
-      componentDeps[comp] = analyzeComponent(comp)
-    }
     componentDeps[comp] && deps.push(componentDeps[comp])
   })
   // 未使用的组件

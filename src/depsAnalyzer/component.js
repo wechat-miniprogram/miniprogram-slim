@@ -83,5 +83,6 @@ const genCompDepsMap = (compDepsGraph) => {
 module.exports = {
   setWeappNpmPath,
   genCompDepsGraph,
-  genCompDepsMap
+  genCompDepsMap,
+  findAbsolutePath
 }
