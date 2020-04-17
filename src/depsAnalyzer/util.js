@@ -50,9 +50,9 @@ const genPackOptions = (unusedFiles, pluginRoot) => {
     if (exts.length === 1) {
       packOptions.ignore.push({
         type: 'file',
-        value: `${name}/${exts[0]}`
+        value: `${name}.${exts[0]}`
       })
-    } else {
+    } else if (exts.length > 1) {
       packOptions.ignore.push({
         type: 'glob',
         value: `${name}.@(${exts.join('|')})`

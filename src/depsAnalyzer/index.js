@@ -33,6 +33,7 @@ const genAppDepsGraph = (cli) => {
 
   const cwd = process.cwd()
   const ignore = cli.ignore ? cli.ignore.split(',') : []
+  const showTable = Boolean(cli.table)
   const root = compileType === 'miniprogram' ? miniprogramRoot : pluginRoot
 
   // 所有的操作均在代码根目录进行
@@ -134,7 +135,10 @@ const genAppDepsGraph = (cli) => {
   fs.ensureDirSync(outputDir)
   fs.writeFileSync(outputJsonFile, JSON.stringify(result, null, 2))
   spinner.succeed(`finish, everything looks good, total used ${Math.ceil(perf.stop('global').time)}ms`)
-  drawTable(data)
+
+  if (showTable) {
+    drawTable(data)
+  }
 }
 
 program
@@ -142,4 +146,5 @@ program
   .description('Analyze dependencies of source code')
   .option('-o, --output [dir]', 'path to directory for analyzer', './analyzer')
   .option('-i, --ignore <glob>', 'glob pattern for files what should be excluded')
+  .option('-t, --table', 'show size data')
   .action(genAppDepsGraph)
