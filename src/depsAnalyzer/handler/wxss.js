@@ -1,7 +1,7 @@
 const fs = require('fs-extra')
 const path = require('path')
 const css = require('css');
-const {suffixExtname} = require('./util')
+const {suffixExtname} = require('../utils/util')
 const ext = 'wxss'
 
 const traverseWxss = (ast) => {

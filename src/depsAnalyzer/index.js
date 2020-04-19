@@ -4,11 +4,11 @@ const program = require('commander')
 const path = require('path')
 const shell = require('shelljs')
 const perf = require('execution-time')()
-const {genData} = require('./genData')
-const {createLog, printObject, genPackOptions, drawTable} = require('./util')
-const {analyzeComponent} = require('./analyzerComp')
-const {findUnusedFiles, findAllComponentDeps,findAllFileInfo} = require('./unused')
-const {genEsModuleDepsGraph} = require('./esmodule')
+const {genData} = require('./utils/genData')
+const {createLog, printObject, genPackOptions, drawTable} = require('./utils/util')
+const {findUnusedFiles, findAllComponentDeps,findAllFileInfo} = require('./utils/unused')
+const {analyzeComponent} = require('./handler/analyzerComp')
+const {genEsModuleDepsGraph} = require('./handler/esmodule')
 
 
 /**
@@ -121,10 +121,10 @@ const genAppDepsGraph = (cli) => {
   spinner.succeed(`generate file size data success, used ${Math.ceil(perf.stop().time)}ms`)
 
   const result = {
-    data,
     packOptions,
     unusedFiles,
     dependencies,
+    data
   }
 
   // 输出结果

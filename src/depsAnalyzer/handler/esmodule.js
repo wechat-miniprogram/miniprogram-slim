@@ -2,7 +2,7 @@ const fs = require('fs-extra')
 const path = require('path')
 const parser = require('@babel/parser')
 const traverse = require('@babel/traverse').default
-const {suffixExtname} = require('./util')
+const {suffixExtname} = require('../utils/util')
 const t = require('babel-types')
 
 const singleModuleAnalyser = ({filePath, ext}) => {
@@ -48,6 +48,7 @@ const genModuleDepsGraph = ({entry, ext, stack = []}) => {
 
   stack.push(entry)
   const entryModule = singleModuleAnalyser({filePath: entry, ext})
+
   const deps = entryModule.deps
   const depsGraph = {[entry]: deps}
   Object.values(deps).forEach(entry => {

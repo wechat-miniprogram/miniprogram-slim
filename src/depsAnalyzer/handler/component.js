@@ -1,7 +1,7 @@
 const glob = require('glob')
 const path = require('path')
 const fs = require('fs-extra')
-const {suffixExtname} = require('./util')
+const {suffixExtname} = require('../utils/util')
 const ext = 'json'
 
 let weappNpmPath = null

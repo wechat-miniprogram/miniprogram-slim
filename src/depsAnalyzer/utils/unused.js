@@ -3,8 +3,8 @@ const glob = require('glob')
 const fs = require('fs-extra')
 const {removeExtname, printObject} = require('./util')
 const {difference} = require('./setOperation')
-const {analyzeComponent, computeComponentSize} = require('./analyzerComp')
-const {findAbsolutePath} = require('./component')
+const {analyzeComponent, computeComponentSize} = require('../handler/analyzerComp')
+const {findAbsolutePath} = require('../handler/component')
 
 const defaultIgnores = [
   '**/node_modules/**',

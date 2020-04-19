@@ -1,7 +1,7 @@
 const fs = require('fs-extra')
 const path = require('path')
 const HTMLParser = require('node-html-parser')
-const {suffixExtname} = require('./util')
+const {suffixExtname} = require('../utils/util')
 
 const traverseWxml = (root) => {
   const result = []
