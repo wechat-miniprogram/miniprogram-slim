@@ -4,6 +4,7 @@ const parser = require('@babel/parser')
 const traverse = require('@babel/traverse').default
 const {suffixExtname} = require('../utils/util')
 const t = require('babel-types')
+const {findAbsolutePath} = require('./util')
 
 const singleModuleAnalyser = ({filePath, ext}) => {
   const code = fs.readFileSync(filePath, 'utf-8')
@@ -15,22 +16,26 @@ const singleModuleAnalyser = ({filePath, ext}) => {
       if (calleeName === 'require') {
         const firstParam = node.arguments[0]
         if (t.isStringLiteral(firstParam)) {
-          const dirname = path.dirname(filePath)
-          const depFilePath = path.join(dirname, firstParam.value)
-          const depFilePathWithExt = suffixExtname(depFilePath, ext)
-          if (fs.existsSync(depFilePathWithExt)) {
-            deps[firstParam.value] = depFilePathWithExt
+          const depFilePath = findAbsolutePath({
+            filePath, 
+            relativePath: firstParam.value,
+            ext
+          })
+          if (depFilePath) {
+            deps[firstParam.value] = depFilePath
           }
         }
       }
     },
 
     ImportDeclaration({ node }) {
-      const dirname = path.dirname(filePath)
-      const depFilePath = path.join(dirname, node.source.value)
-      const depFilePathWithExt = suffixExtname(depFilePath, ext)
-      if (fs.existsSync(depFilePathWithExt)) {
-        deps[node.source.value] = depFilePathWithExt
+      const depFilePath = findAbsolutePath({
+        filePath, 
+        relativePath: node.source.value,
+        ext
+      })
+      if (depFilePath) {
+        deps[node.source.value] = depFilePath
       }
     }
   })

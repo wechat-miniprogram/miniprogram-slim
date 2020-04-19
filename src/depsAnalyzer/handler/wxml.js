@@ -2,6 +2,7 @@ const fs = require('fs-extra')
 const path = require('path')
 const HTMLParser = require('node-html-parser')
 const {suffixExtname} = require('../utils/util')
+const {findAbsolutePath} = require('./util')
 
 const traverseWxml = (root) => {
   const result = []
@@ -44,15 +45,20 @@ const singleWxmlAnalyser = (filePath) => {
 
   const wxmlDeps = {}
   const wxsDeps = {}
-  const dirname = path.dirname(filePath)
   const depFiles = traverseWxml(root)
   depFiles.forEach(item => {
     const {type, route} = item
-    const depFilePath = path.join(dirname, route)
-    if (type === 'wxml') {
-      wxmlDeps[route] = suffixExtname(depFilePath, 'wxml') 
-    } else {
-      wxsDeps[route] = suffixExtname(depFilePath, 'wxs')
+    const depFilePath = findAbsolutePath({
+      filePath,
+      relativePath: route,
+      ext: type
+    })
+    if (depFilePath) {
+      if (type === 'wxml') {
+        wxmlDeps[route] = depFilePath
+      } else {
+        wxsDeps[route] = depFilePath
+      }
     }
   })
 

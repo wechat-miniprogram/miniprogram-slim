@@ -87,7 +87,7 @@ const drawTable = (data) => {
       content: name,
       vAlign: 'center'
     }, {
-      content: pages[0].name
+      content: pages[0].absolutePath
     }, {
       content: pages[0].size
     }, {
@@ -100,7 +100,7 @@ const drawTable = (data) => {
 
     for (let i = 1; i < pages.length; i++) {
       table.push([{
-        content: pages[i].name
+        content: pages[i].absolutePath
       }, {
         content: pages[i].size
       }, {
@@ -110,7 +110,7 @@ const drawTable = (data) => {
 
     for (let i = 0; i < components.length; i++) {
       table.push([{
-        content: colors.green(components[i].name)
+        content: colors.green(components[i].absolutePath)
       }, {
         content: components[i].size
       }, {

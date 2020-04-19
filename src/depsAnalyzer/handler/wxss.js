@@ -2,7 +2,7 @@ const fs = require('fs-extra')
 const path = require('path')
 const css = require('css');
 const {suffixExtname} = require('../utils/util')
-const ext = 'wxss'
+const {findAbsolutePath} = require('./util')
 
 const traverseWxss = (ast) => {
   const result = [] // 找出 import 引入的文件
@@ -25,8 +25,14 @@ const singleWxssAnalyser = (filePath) => {
   const dirname = path.dirname(filePath)
   const depWxssFiles = traverseWxss(ast)
   depWxssFiles.forEach(relativePath => {
-    const depFilePath = path.join(dirname, relativePath)
-    deps[relativePath] = suffixExtname(depFilePath, ext) 
+    const depFilePath = findAbsolutePath({
+      filePath, 
+      relativePath,
+      ext: 'wxss'
+    })
+    if (depFilePath) {
+      deps[relativePath] = depFilePath
+    }
   })
 
   return {
@@ -36,7 +42,7 @@ const singleWxssAnalyser = (filePath) => {
 }
 
 const genWxssDepsGraph = (entry) => {
-  entry = suffixExtname(entry, ext)
+  entry = suffixExtname(entry, 'wxss')
   if (!fs.existsSync(entry)) return {}
   
   const entryModule = singleWxssAnalyser(entry)

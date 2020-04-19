@@ -4,7 +4,7 @@ const fs = require('fs-extra')
 const {removeExtname, printObject} = require('./util')
 const {difference} = require('./setOperation')
 const {analyzeComponent, computeComponentSize} = require('../handler/analyzerComp')
-const {findAbsolutePath} = require('../handler/component')
+const {findAbsolutePath} = require('../handler/util')
 
 const defaultIgnores = [
   '**/node_modules/**',
@@ -19,15 +19,20 @@ const findAllComponent = () => {
   for (let filePath of jsonFiles) {
     const content = fs.readJSONSync(filePath)
     if (content.component === true) {
-      components.add(removeExtname(filePath))
+      components.add(filePath)
     }
 
     if (content.usingComponents) {
       const usingComps = Object.values(content.usingComponents)
       usingComps.forEach(comp => {
         if (!comp.startsWith('plugin://')) {
-          const dirname = path.dirname(filePath)
-          const compPath = findAbsolutePath(dirname, comp)
+          // const dirname = path.dirname(filePath)
+          // const compPath = findAbsolutePath(dirname, comp)
+          const compPath = findAbsolutePath({
+            filePath,
+            relativePath: comp,
+            ext: 'json'
+          })
           if (compPath) components.add(compPath)
         }
       })
