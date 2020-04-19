@@ -1,0 +1,30 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/other/other"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "WeChat",
+    "navigationBarTextStyle": "black"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "usingComponents": {
+    "mp-searchbar": "weui-miniprogram/searchbar/searchbar"
+  },
+  "subpackages": [
+    {
+      "root": "subpackages/buy/",
+      "pages": [
+        "buy"
+      ]
+    }, {
+      "root": "subpackages/order/",
+      "pages": [
+        "order"
+      ]
+    }
+  ]
+}

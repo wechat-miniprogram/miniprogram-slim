@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "mp-loading": "weui-miniprogram/loading/loading",
+    "mp-searchbar": "weui-miniprogram/searchbar/searchbar",
+    "mp-wxml-to-canvas": "wxml-to-canvas"
+  }
+}

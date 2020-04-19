@@ -1,0 +1,4 @@
+var tools = require("./tools.wxs");
+var msg = tools.msg
+
+

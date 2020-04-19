@@ -1,0 +1,6 @@
+<include src="./test"/>
+<wxs src="../../wxs/filter.wxs" module="filter"/>
+
+<mp-searchbar bindselectresult="selectResult" search="{{search}}"></mp-searchbar>
+<mp-loading type="circle"></mp-loading>
+<button bindtap="chooseImage">chooseImage</button>
