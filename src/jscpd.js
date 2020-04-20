@@ -6,7 +6,7 @@ const {resolve} = require('path')
 const path2JscpdJson = resolve(__dirname, '../config/jscpd.json')
 const path2JscpdBin = resolve(__dirname, '../node_modules/jscpd/bin/jscpd')
 const jscpdAction = (dir, cli) => {
-  let config = cli.config ? resolve(cli.config) : '.jscpd.json'
+  const config = cli.config ? resolve(cli.config) : '.jscpd.json'
   if (!fs.existsSync(config)) {
     fs.copySync(path2JscpdJson, config)
   }

@@ -2,15 +2,13 @@ const fs = require('fs-extra')
 const ora = require('ora')
 const program = require('commander')
 const path = require('path')
-const glob = require('glob')
 const shell = require('shelljs')
 const perf = require('execution-time')()
 const {genData} = require('./utils/genData')
-const {createLog, genPackOptions, drawTable} = require('./utils/util')
-const {findUnusedFiles, findAllComponentDeps,findAllFileInfo} = require('./utils/unused')
+const {genPackOptions, drawTable} = require('./utils/util')
+const {findUnusedFiles, findAllComponentDeps, findAllFileInfo} = require('./utils/unused')
 const {analyzeComponent} = require('./handler/analyzerComp')
 const {genEsModuleDepsGraph} = require('./handler/esmodule')
-
 
 /**
  * 1. 忽略引用插件中的组件
@@ -21,7 +19,7 @@ const genAppDepsGraph = (cli) => {
 
   const projectConfigPath = './project.config.json'
   if (!fs.existsSync(projectConfigPath)) {
-    console.warn(`Error: project.config.json is not exist`)
+    console.warn('Error: project.config.json is not exist')
     return
   }
 
@@ -58,7 +56,7 @@ const genAppDepsGraph = (cli) => {
   if (compileType === 'plugin') {
     const mainPath = entryJson.main || 'index.js'
     const esmoduleDepsGraph = genEsModuleDepsGraph(mainPath)
-    dependencies.app.esDeps = Object.keys(esmoduleDepsGraph.map) 
+    dependencies.app.esDeps = Object.keys(esmoduleDepsGraph.map)
     dependencies.app.files.push(...dependencies.app.esDeps)
   }
   spinner.succeed(`analyze ${entryPath} success, used ${Math.ceil(perf.stop().time)}ms`)
@@ -101,7 +99,7 @@ const genAppDepsGraph = (cli) => {
     ignore
   })
   spinner.succeed(`find unusedFiles success, used ${Math.ceil(perf.stop().time)}ms`)
-  
+
   // 生成打包配置
   perf.start()
   spinner.start('generate packOptions')
@@ -128,7 +126,7 @@ const genAppDepsGraph = (cli) => {
   // 输出结果
   spinner.start('write output')
   shell.cd(cwd)
-  const outputDir = cli.output 
+  const outputDir = cli.output
   const outputJsonFile = path.join(outputDir, 'result.json')
   fs.ensureDirSync(outputDir)
   fs.writeFileSync(outputJsonFile, JSON.stringify(result, null, 2))

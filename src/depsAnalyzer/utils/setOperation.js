@@ -1,5 +1,5 @@
 function isSuperset(set, subset) {
-  for (let elem of subset) {
+  for (const elem of subset) {
     if (!set.has(elem)) {
       return false
     }
@@ -8,16 +8,16 @@ function isSuperset(set, subset) {
 }
 
 function union(setA, setB) {
-  let _union = new Set(setA)
-  for (let elem of setB) {
+  const _union = new Set(setA)
+  for (const elem of setB) {
     _union.add(elem)
   }
   return _union
 }
 
 function intersection(setA, setB) {
-  let _intersection = new Set()
-  for (let elem of setB) {
+  const _intersection = new Set()
+  for (const elem of setB) {
     if (setA.has(elem)) {
       _intersection.add(elem)
     }
@@ -26,8 +26,8 @@ function intersection(setA, setB) {
 }
 
 function symmetricDifference(setA, setB) {
-  let _difference = new Set(setA)
-  for (let elem of setB) {
+  const _difference = new Set(setA)
+  for (const elem of setB) {
     if (_difference.has(elem)) {
       _difference.delete(elem)
     } else {
@@ -38,8 +38,8 @@ function symmetricDifference(setA, setB) {
 }
 
 function difference(setA, setB) {
-  let _difference = new Set(setA)
-  for (let elem of setB) {
+  const _difference = new Set(setA)
+  for (const elem of setB) {
     _difference.delete(elem)
   }
   return _difference

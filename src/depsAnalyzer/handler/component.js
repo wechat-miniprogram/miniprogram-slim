@@ -11,7 +11,7 @@ const singleJsonAnalyzer = (filePath) => {
     const relativePath = usingComponents[comp]
     if (!relativePath.startsWith('plugin://')) {
       const depCompPath = findAbsolutePath({
-        filePath, 
+        filePath,
         relativePath,
         ext: 'json'
       })
@@ -29,11 +29,11 @@ const singleJsonAnalyzer = (filePath) => {
 const genCompDepsGraph = (entry) => {
   entry = suffixExtname(entry, 'json')
   if (!fs.existsSync(entry)) return {}
-  
+
   const entryModule = singleJsonAnalyzer(entry)
   const deps = entryModule.deps
   const depsGraph = {[entry]: deps}
-  
+
   Object.values(deps).forEach(entry => {
     Object.assign(depsGraph, genCompDepsGraph(entry))
   })
@@ -43,7 +43,7 @@ const genCompDepsGraph = (entry) => {
 const genCompDepsMap = (compDepsGraph) => {
   const compMap = {}
   Object.values(compDepsGraph).forEach(item => {
-    Object.assign(compMap, item)  
+    Object.assign(compMap, item)
   })
   const compDeps = Object.values(compMap)
   return compDeps

@@ -1,5 +1,4 @@
 const fs = require('fs-extra')
-const path = require('path')
 const HTMLParser = require('node-html-parser')
 const {suffixExtname} = require('../utils/util')
 const {findAbsolutePath} = require('./util')
@@ -15,7 +14,7 @@ const traverseWxml = (root) => {
     rawAttrs.forEach(attr => {
       const pairs = attr.split('=')
       if (pairs[0] === 'src' && pairs[1]) {
-        const route = pairs[1].replace(/\'|\"/g, '')
+        const route = pairs[1].replace(/'|"/g, '')
         const type = tagName === 'wxs' ? 'wxs' : 'wxml'
         result.push({
           type,
@@ -91,7 +90,7 @@ const genWxmlDepsGraph = (entry) => {
 const genWxsDepsMap = (wxmlDepsGraph) => {
   const wxsMap = {}
   Object.values(wxmlDepsGraph).forEach(item => {
-    Object.assign(wxsMap, item.wxsDeps)  
+    Object.assign(wxsMap, item.wxsDeps)
   })
   return wxsMap
 }

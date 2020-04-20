@@ -1,7 +1,6 @@
 const path = require('path')
 const glob = require('glob')
 const fs = require('fs-extra')
-const {removeExtname, printObject} = require('./util')
 const {difference} = require('./setOperation')
 const {analyzeComponent, computeComponentSize} = require('../handler/analyzerComp')
 const {findAbsolutePath} = require('../handler/util')
@@ -16,7 +15,7 @@ const findAllComponent = () => {
   const jsonFiles = glob.sync('**/*.json', {ignore: [...defaultIgnores]})
   const components = new Set()
 
-  for (let filePath of jsonFiles) {
+  for (const filePath of jsonFiles) {
     const content = fs.readJSONSync(filePath)
     if (content.component === true) {
       components.add(filePath)
@@ -42,7 +41,7 @@ const findAllComponent = () => {
 const findAllFileInfo = () => {
   const exts = ['wxml', 'wxss', 'wxs', 'js', 'json'].join('|')
   const allFiles = glob.sync(`**/*.@(${exts})`, {
-    ignore: [...defaultIgnores]  
+    ignore: [...defaultIgnores]
   })
   const allFileInfo = {}
   allFiles.forEach(file => {
@@ -91,7 +90,7 @@ const findUnusedFiles = ({
   // 所有文件
   const allFiles = Object.keys(allFileInfo)
   const allFileSet = new Set(allFiles)
-  
+
   const {app, pages, subpackages} = dependencies
   const deps = [app, ...Object.values(pages), ...Object.values(subpackages)]
   const usedCompSet = new Set()
@@ -99,19 +98,21 @@ const findUnusedFiles = ({
     item.compDeps.forEach(comp => usedCompSet.add(comp))
   })
   usedCompSet.forEach(comp => {
-    componentDeps[comp] && deps.push(componentDeps[comp])
+    if (componentDeps[comp]) {
+      deps.push(componentDeps[comp])
+    }
   })
   // 未使用的组件
   // const allCompSet = new Set(components)
   // const unusedCompSet = difference(allCompSet, usedCompSet)
- 
+
   // 已使用的文件
   const usedFiles = []
   deps.forEach(item => {
     usedFiles.push(...item.files)
   })
   const usedFileSet = new Set(usedFiles)
-  const ignoreFiles= findIgnoreFils(ignore)
+  const ignoreFiles = findIgnoreFils(ignore)
   const ignoreFileSet = new Set(ignoreFiles)
 
   // 未使用的文件

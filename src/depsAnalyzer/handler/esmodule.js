@@ -1,9 +1,10 @@
+/* eslint-disable max-classes-per-file */
+
 const fs = require('fs-extra')
-const path = require('path')
 const parser = require('@babel/parser')
 const traverse = require('@babel/traverse').default
-const {suffixExtname} = require('../utils/util')
 const t = require('babel-types')
+const {suffixExtname} = require('../utils/util')
 const {findAbsolutePath} = require('./util')
 
 const singleModuleAnalyser = ({filePath, ext}) => {
@@ -17,7 +18,7 @@ const singleModuleAnalyser = ({filePath, ext}) => {
         const firstParam = node.arguments[0]
         if (t.isStringLiteral(firstParam)) {
           const depFilePath = findAbsolutePath({
-            filePath, 
+            filePath,
             relativePath: firstParam.value,
             ext
           })
@@ -28,9 +29,9 @@ const singleModuleAnalyser = ({filePath, ext}) => {
       }
     },
 
-    ImportDeclaration({ node }) {
+    ImportDeclaration({node}) {
       const depFilePath = findAbsolutePath({
-        filePath, 
+        filePath,
         relativePath: node.source.value,
         ext
       })
@@ -92,7 +93,7 @@ class Graph {
 
 /**
  * 格式化成邻接表
- * @param {*} moduleDepsGraph 
+ * @param {*} moduleDepsGraph
  */
 const formatModuleDepsGraph = (moduleDepsGraph) => {
   const graph = new Graph()

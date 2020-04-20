@@ -4,10 +4,9 @@ const Table = require('cli-table3')
 const colors = require('colors')
 
 
-
 const createLog = (module) => {
   const manager = require('simple-node-logger').createLogManager({
-    timestampFormat:'YYYY-MM-DD HH:mm:ss'
+    timestampFormat: 'YYYY-MM-DD HH:mm:ss'
   })
   const log = manager.createLogger(module)
   return log
@@ -25,9 +24,7 @@ const removeExtname = (filePath) => {
   return dir ? `${dir}${sep}${name}` : `${name}`
 }
 
-const unique = (arr = []) => {
-  return Array.from(new Set(arr))
-}
+const unique = (arr = []) => Array.from(new Set(arr))
 
 const printObject = (Object) => {
   console.log(inspect(Object, {showHidden: false, depth: null}))
@@ -44,7 +41,7 @@ const genPackOptions = (unusedFiles, pluginRoot) => {
     if (!map[name]) map[name] = []
     map[name].push(ext)
   })
-  const packOptions = {ignore:[]}
+  const packOptions = {ignore: []}
   Object.keys(map).forEach(name => {
     const exts = map[name]
     if (exts.length === 1) {
@@ -68,7 +65,7 @@ const drawTable = (data) => {
     ...data.subpackages.children
   ]
   items.sort((a, b) => b.size - a.size)
-    items.unshift(data.app)
+  items.unshift(data.app)
 
   const table = new Table({
     head: ['page', 'file & comp', 'stat size (kB)', 'percent', 'totalSize (kB)'],

@@ -4,3 +4,4 @@ test/minicode/miniprogram_npm
 test/minicode/analyzer
 .DS_Store
 test/.DS_Store
+package-lock.json

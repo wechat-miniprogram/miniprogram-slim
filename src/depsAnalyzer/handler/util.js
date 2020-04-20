@@ -1,6 +1,6 @@
 const path = require('path')
 const fs = require('fs-extra')
-const {suffixExtname} = require("../utils/util")
+const {suffixExtname} = require('../utils/util')
 
 const findNpmPath = ({
   cwd,
@@ -30,7 +30,7 @@ const findNpmPath = ({
   if (cwd === absoluteRoot) {
     return null
   }
-  
+
   return findNpmPath({
     cwd: path.resolve(cwd, '../'),
     relativePath,

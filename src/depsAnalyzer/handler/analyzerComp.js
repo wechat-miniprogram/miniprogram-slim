@@ -1,9 +1,9 @@
+const fs = require('fs')
 const {genWxmlDepsGraph, genWxsDepsMap} = require('./wxml')
 const {genEsModuleDepsGraph, genWxsModuleDepsGraph} = require('./esmodule')
 const {genCompDepsGraph, genCompDepsMap} = require('./component')
 const {genWxssDepsGraph} = require('./wxss')
 const {suffixExtname} = require('../utils/util')
-const fs = require('fs')
 
 // 分析组件的依赖情况，页面也可视为一个组件
 const analyzeComponent = (entry) => {
@@ -45,7 +45,7 @@ const computeComponentSize = (compDep, allFileInfo) => {
     const size = allFileInfo[file].size
     totalSize += size
   })
-  
+
   return +totalSize.toFixed(2)
 }
 

@@ -28,7 +28,9 @@ const genFileData = (file, allFileInfo) => {
   }
 }
 
-const genPageData = ({name, pageDeps, componentDeps, allFileInfo}) => {
+const genPageData = ({
+  name, pageDeps, componentDeps, allFileInfo
+}) => {
   const comps = pageDeps.compDeps
   const compData = genPageCompData(comps, componentDeps)
 
@@ -118,7 +120,7 @@ const genData = ({dependencies, componentDeps, allFileInfo}) => {
   // if (!data.subpackages.size) delete data.subpackages
   // if (!data.pages.size) delete data.pages
   // if (!data.app.size) delete data.app
-  
+
   return data
 }
 

@@ -4,9 +4,7 @@ const path = require('path')
 const Spritesmith = require('spritesmith')
 const CleanCSS = require('clean-css')
 
-const parseInt = (value) => {
-  return parseInt(value)
-}
+const parseInt = (value) => parseInt(value)
 
 const spriteAction = (input, cli) => {
   const {filename, padding, output} = cli
@@ -18,10 +16,11 @@ const spriteAction = (input, cli) => {
       console.error(`Failed to construct sprite map: ${err}`)
       return
     }
-  
-    const {coordinates, image: buffer} = result    
+
+    const {coordinates, image: buffer} = result
     const styles = []
     const classNames = []
+    // eslint-disable-next-line guard-for-in
     for (const key in coordinates) {
       const box = coordinates[key]
       const basename = path.basename(key).split('.')[0]
@@ -43,7 +42,7 @@ const spriteAction = (input, cli) => {
         background-image: url("./${filename}.png");
       }
     `)
-    
+
     styles.unshift('/*!-----The css code below is created by----*/')
 
     const spritesheet = styles.join('\n')
@@ -65,4 +64,3 @@ program
   .option('-f, --filename [string]', 'filename of spritesheet', 'sprite')
   .option('-p, --padding [number]', 'padding to use between images', parseInt, 2)
   .action(spriteAction)
-  
