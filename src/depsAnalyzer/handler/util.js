@@ -57,7 +57,6 @@ const findAbsolutePath = ({
   if (fs.existsSync(absolutePath)) {
     return absolutePath
   }
-  console.log('@@', filePath, relativePath)
   if (ext === 'js' || ext === 'json') {
     absolutePath = findNpmPath({
       relativePath,
@@ -68,7 +67,6 @@ const findAbsolutePath = ({
       return absolutePath
     }
   }
-  console.log('@@', absolutePath)
   return null
 }
 

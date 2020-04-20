@@ -1,15 +1,14 @@
 {
-  "name": "cli",
+  "name": "miniprogram-slim-cli",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "analyze miniprogram dependencies, find unused files",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint \"src/**/*js\" --fix"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["miniprogram", "slim", "dependencies analyzer", "useless file"],
+  "author": "sanfordsun",
+  "license": "MIT",
   "dependencies": {
     "@babel/parser": "^7.8.7",
     "@babel/traverse": "^7.8.6",
@@ -36,7 +35,7 @@
     "spritesmith": "^3.4.0"
   },
   "bin": {
-    "slim": "./src/index.js"
+    "miniprogram-slim": "./bin/slim.js"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
