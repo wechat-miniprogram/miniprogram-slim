@@ -1,6 +1,6 @@
 {
-  "name": "miniprogram-slim-cli",
-  "version": "1.0.0",
+  "name": "miniprogram-slim",
+  "version": "1.0.0-beta",
   "description": "analyze miniprogram dependencies, find unused files",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -26,6 +26,9 @@
   ],
   "author": "sanfordsun",
   "license": "MIT",
+  "bin": {
+    "miniprogram-slim": "./bin/slim.js"
+  },
   "dependencies": {
     "@babel/parser": "^7.8.7",
     "@babel/traverse": "^7.8.6",
@@ -51,9 +54,6 @@
     "shelljs": "^0.8.3",
     "simple-node-logger": "^18.12.24",
     "spritesmith": "^3.4.0"
-  },
-  "bin": {
-    "miniprogram-slim": "./bin/slim.js"
   },
   "devDependencies": {
     "eslint": "^6.8.0",

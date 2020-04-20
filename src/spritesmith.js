@@ -60,7 +60,7 @@ const spriteAction = (input, cli) => {
 program
   .command('sprite <input...>')
   .description('Covert images into css sprites')
-  .option('-o, --output [path]', 'output directory', './')
+  .option('-o, --output [dir]', 'output directory', './')
   .option('-f, --filename [string]', 'filename of spritesheet', 'sprite')
   .option('-p, --padding [number]', 'padding to use between images', parseInt, 2)
   .action(spriteAction)

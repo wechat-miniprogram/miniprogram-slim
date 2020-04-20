@@ -149,9 +149,9 @@ const genAppDepsGraph = (cli) => {
 
 program
   .command('analyzer')
-  .description('Analyze dependencies of source code')
-  .option('-o, --output [dir]', 'path to directory for analyzer', './analyzer')
-  .option('-i, --ignore <glob>', 'glob pattern for files what should be excluded')
+  .description('Analyze dependencies of miniprogram, find out unused files')
+  .option('-o, --output [dir]', 'path to directory for result', './analyzer')
+  .option('-i, --ignore <glob>', 'glob pattern for files what should be excluded from unused files')
   .option('-w, --write', 'overwrite old project.config.json')
-  .option('-t, --table', 'show size data')
+  .option('-t, --table', 'print miniprogram file size data')
   .action(genAppDepsGraph)

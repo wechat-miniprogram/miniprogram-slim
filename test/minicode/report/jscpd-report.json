@@ -1,0 +1,92 @@
+{
+	"duplicates": [],
+	"statistics": {
+		"detectionDate": "2020-04-20T11:05:35.683Z",
+		"formats": {
+			"javascript": {
+				"sources": {
+					"/Users/sanfordsun/tencent/cli/test/minicode/pages/index/index.js": {
+						"lines": 22,
+						"sources": 1,
+						"clones": 0,
+						"duplicatedLines": 0,
+						"percentage": 0,
+						"newDuplicatedLines": 0,
+						"newClones": 0
+					},
+					"/Users/sanfordsun/tencent/cli/test/minicode/pages/other/other.js": {
+						"lines": 68,
+						"sources": 1,
+						"clones": 0,
+						"duplicatedLines": 0,
+						"percentage": 0,
+						"newDuplicatedLines": 0,
+						"newClones": 0
+					}
+				},
+				"total": {
+					"lines": 90,
+					"sources": 2,
+					"clones": 0,
+					"duplicatedLines": 0,
+					"percentage": 0,
+					"newDuplicatedLines": 0,
+					"newClones": 0
+				}
+			},
+			"markup": {
+				"sources": {
+					"/Users/sanfordsun/tencent/cli/test/minicode/pages/index/index.wxml": {
+						"lines": 6,
+						"sources": 1,
+						"clones": 0,
+						"duplicatedLines": 0,
+						"percentage": 0,
+						"newDuplicatedLines": 0,
+						"newClones": 0
+					}
+				},
+				"total": {
+					"lines": 6,
+					"sources": 1,
+					"clones": 0,
+					"duplicatedLines": 0,
+					"percentage": 0,
+					"newDuplicatedLines": 0,
+					"newClones": 0
+				}
+			},
+			"css": {
+				"sources": {
+					"/Users/sanfordsun/tencent/cli/test/minicode/pages/index/index.wxss": {
+						"lines": 8,
+						"sources": 1,
+						"clones": 0,
+						"duplicatedLines": 0,
+						"percentage": 0,
+						"newDuplicatedLines": 0,
+						"newClones": 0
+					}
+				},
+				"total": {
+					"lines": 8,
+					"sources": 1,
+					"clones": 0,
+					"duplicatedLines": 0,
+					"percentage": 0,
+					"newDuplicatedLines": 0,
+					"newClones": 0
+				}
+			}
+		},
+		"total": {
+			"lines": 104,
+			"sources": 4,
+			"clones": 0,
+			"duplicatedLines": 0,
+			"percentage": 0,
+			"newDuplicatedLines": 0,
+			"newClones": 0
+		}
+	}
+}

@@ -57,7 +57,7 @@ async function imageminAction(input, cli) {
 program
   .command('imagemin <input...>')
   .description('Minify images seamlessly')
-  .option('-o, --output <path>', 'output directory')
+  .option('-o, --output <dir>', 'output directory')
   .option('--png-quality <string>', 'instructs pngquant to use the least amount of colors', '0.65,0.8')
   .option('--no-progressive', 'creates baseline JPEG file')
   .action(imageminAction)

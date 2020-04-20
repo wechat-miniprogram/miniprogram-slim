@@ -19,6 +19,6 @@ program
   .command('cpd <dir>')
   .description('Detect duplications in source code')
   .option('-c, --config [file]', 'path to config file', '.jscpd.json')
-  .option('-o, --output [path]', 'path to directory for reports', './report/')
+  .option('-o, --output [dir]', 'path to directory for reports', './report/')
   .option('-i, --ignore <glob>', 'glob pattern for files what should be excluded from duplication detection')
   .action(jscpdAction)
