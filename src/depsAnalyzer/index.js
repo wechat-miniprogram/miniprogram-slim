@@ -132,8 +132,8 @@ const genAppDepsGraph = (cli) => {
 
   const result = {
     packOptions,
-    unusedFiles,
     dependencies,
+    unusedFiles,
     data
   }
 
@@ -144,6 +144,16 @@ const genAppDepsGraph = (cli) => {
   const outputJsonFile = path.join(outputDir, 'result.json')
   fs.ensureDirSync(outputDir)
   fs.writeFileSync(outputJsonFile, JSON.stringify(result, null, 2))
+
+  if (cli.write) {
+    if (!projectConfig.packOptions) projectConfig.packOptions = {}
+    if (!projectConfig.packOptions.ignore) projectConfig.packOptions.ignore = []
+
+    const _packOptions = projectConfig.packOptions
+    const _ignore = _packOptions.ignore
+    _ignore.push(...packOptions.ignore)
+    fs.writeFileSync('project.config.json', JSON.stringify(projectConfig, null, 2))
+  }
   spinner.succeed(`finish, everything looks good, total used ${Math.ceil(perf.stop('global').time)}ms`)
 
   if (showTable) {
@@ -156,5 +166,6 @@ program
   .description('Analyze dependencies of source code')
   .option('-o, --output [dir]', 'path to directory for analyzer', './analyzer')
   .option('-i, --ignore <glob>', 'glob pattern for files what should be excluded')
+  .option('-w, --write', 'overwrite old project.config.json')
   .option('-t, --table', 'show size data')
   .action(genAppDepsGraph)

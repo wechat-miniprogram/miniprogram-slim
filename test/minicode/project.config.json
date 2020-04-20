@@ -1,184 +1,176 @@
 {
-	"description": "项目配置文件",
-	"setting": {
-		"urlCheck": true,
-		"es6": true,
-		"postcss": true,
-		"preloadBackgroundData": false,
-		"minified": true,
-		"newFeature": true,
-		"coverView": true,
-		"nodeModules": true,
-		"autoAudits": false,
-		"showShadowRootInWxmlPanel": true,
-		"scopeDataCheck": false,
-		"checkInvalidKey": true,
-		"checkSiteMap": true,
-		"uploadWithSourceMap": true,
-		"babelSetting": {
-			"ignore": [],
-			"disablePlugins": [],
-			"outputPath": ""
-		},
-		"enhance": true
-	},
-	"packOptions": {
-		"ignore": [
-			{
-				"type": "file",
-				"value": "analyzer/result.json"
-			},
-			{
-				"type": "glob",
-				"value": "components/comp.@(js|json|wxml)"
-			},
-			{
-				"type": "file",
-				"value": "components/filter.wxs"
-			},
-			{
-				"type": "file",
-				"value": "miniprogram_npm/eventemitter3/index.js"
-			},
-			{
-				"type": "file",
-				"value": "miniprogram_npm/lodash/index.js"
-			},
-			{
-				"type": "glob",
-				"value": "miniprogram_npm/weui-miniprogram/actionsheet/actionsheet.@(js|json|wxml|wxss)"
-			},
-			{
-				"type": "glob",
-				"value": "miniprogram_npm/weui-miniprogram/badge/badge.@(js|json|wxml|wxss)"
-			},
-			{
-				"type": "glob",
-				"value": "miniprogram_npm/weui-miniprogram/checkbox-group/checkbox-group.@(js|json|wxml|wxss)"
-			},
-			{
-				"type": "glob",
-				"value": "miniprogram_npm/weui-miniprogram/checkbox/checkbox.@(js|json|wxml|wxss)"
-			},
-			{
-				"type": "glob",
-				"value": "miniprogram_npm/weui-miniprogram/dialog/dialog.@(js|json|wxml|wxss)"
-			},
-			{
-				"type": "glob",
-				"value": "miniprogram_npm/weui-miniprogram/form-page/form-page.@(js|json|wxml|wxss)"
-			},
-			{
-				"type": "glob",
-				"value": "miniprogram_npm/weui-miniprogram/form/form.@(js|json|wxml)"
-			},
-			{
-				"type": "glob",
-				"value": "miniprogram_npm/weui-miniprogram/gallery/gallery.@(js|json|wxml|wxss)"
-			},
-			{
-				"type": "glob",
-				"value": "miniprogram_npm/weui-miniprogram/half-screen-dialog/half-screen-dialog.@(js|json|wxml|wxss)"
-			},
-			{
-				"type": "glob",
-				"value": "miniprogram_npm/weui-miniprogram/icon/icon.@(js|json|wxml|wxss)"
-			},
-			{
-				"type": "glob",
-				"value": "miniprogram_npm/weui-miniprogram/index.@(js|json)"
-			},
-			{
-				"type": "glob",
-				"value": "miniprogram_npm/weui-miniprogram/msg/msg.@(js|json|wxml|wxss)"
-			},
-			{
-				"type": "glob",
-				"value": "miniprogram_npm/weui-miniprogram/navigation-bar/navigation-bar.@(js|json|wxml|wxss)"
-			},
-			{
-				"type": "file",
-				"value": "miniprogram_npm/weui-miniprogram/package.json"
-			},
-			{
-				"type": "glob",
-				"value": "miniprogram_npm/weui-miniprogram/slideview/slideview.@(js|json|wxml|wxs|wxss)"
-			},
-			{
-				"type": "glob",
-				"value": "miniprogram_npm/weui-miniprogram/tabbar/tabbar.@(js|json|wxml|wxss)"
-			},
-			{
-				"type": "glob",
-				"value": "miniprogram_npm/weui-miniprogram/toptips/toptips.@(js|json|wxml|wxss)"
-			},
-			{
-				"type": "glob",
-				"value": "miniprogram_npm/weui-miniprogram/uploader/uploader.@(js|json|wxml|wxss)"
-			},
-			{
-				"type": "glob",
-				"value": "miniprogram_npm/weui-miniprogram/video-swiper/video-swiper.@(js|json|wxml|wxss)"
-			},
-			{
-				"type": "file",
-				"value": "miniprogram_npm/wxml-to-canvas/utils.js"
-			},
-			{
-				"type": "file",
-				"value": "package-lock.json"
-			},
-			{
-				"type": "file",
-				"value": "package.json"
-			},
-			{
-				"type": "file",
-				"value": "util/unused.js"
-			}
-		]
-	},
-	"compileType": "miniprogram",
-	"libVersion": "2.10.2",
-	"appid": "wx407d0fba58912be6",
-	"projectname": "minicode-deps",
-	"debugOptions": {
-		"hidedInDevtools": []
-	},
-	"isGameTourist": false,
-	"simulatorType": "wechat",
-	"simulatorPluginLibVersion": {},
-	"condition": {
-		"search": {
-			"current": -1,
-			"list": []
-		},
-		"conversation": {
-			"current": -1,
-			"list": []
-		},
-		"plugin": {
-			"current": -1,
-			"list": []
-		},
-		"game": {
-			"currentL": -1,
-			"list": []
-		},
-		"gamePlugin": {
-			"current": -1,
-			"list": []
-		},
-		"miniprogram": {
-			"current": -1,
-			"list": [
-				{
-					"id": -1,
-					"name": "subpackages/buy/buy",
-					"pathName": "subpackages/buy/buy",
-					"scene": null
-				}
-			]
-		}
-	}
+  "description": "项目配置文件",
+  "setting": {
+    "urlCheck": true,
+    "es6": true,
+    "postcss": true,
+    "preloadBackgroundData": false,
+    "minified": true,
+    "newFeature": true,
+    "coverView": true,
+    "nodeModules": true,
+    "autoAudits": false,
+    "showShadowRootInWxmlPanel": true,
+    "scopeDataCheck": false,
+    "checkInvalidKey": true,
+    "checkSiteMap": true,
+    "uploadWithSourceMap": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    },
+    "enhance": true
+  },
+  "compileType": "miniprogram",
+  "libVersion": "2.10.2",
+  "appid": "wx407d0fba58912be6",
+  "projectname": "miniprogram-bundle-analyzer",
+  "debugOptions": {
+    "hidedInDevtools": []
+  },
+  "isGameTourist": false,
+  "simulatorType": "wechat",
+  "simulatorPluginLibVersion": {},
+  "condition": {
+    "search": {
+      "current": -1,
+      "list": []
+    },
+    "conversation": {
+      "current": -1,
+      "list": []
+    },
+    "plugin": {
+      "current": -1,
+      "list": []
+    },
+    "game": {
+      "currentL": -1,
+      "list": []
+    },
+    "gamePlugin": {
+      "current": -1,
+      "list": []
+    },
+    "miniprogram": {
+      "current": -1,
+      "list": [
+        {
+          "id": -1,
+          "name": "subpackages/buy/buy",
+          "pathName": "subpackages/buy/buy",
+          "scene": null
+        }
+      ]
+    }
+  },
+  "packOptions": {
+    "ignore": [
+      {
+        "type": "file",
+        "value": "analyzer/result.json"
+      },
+      {
+        "type": "glob",
+        "value": "components/comp.@(js|json|wxml)"
+      },
+      {
+        "type": "file",
+        "value": "miniprogram_npm/eventemitter3/index.js"
+      },
+      {
+        "type": "glob",
+        "value": "miniprogram_npm/weui-miniprogram/actionsheet/actionsheet.@(js|json|wxml|wxss)"
+      },
+      {
+        "type": "glob",
+        "value": "miniprogram_npm/weui-miniprogram/badge/badge.@(js|json|wxml|wxss)"
+      },
+      {
+        "type": "glob",
+        "value": "miniprogram_npm/weui-miniprogram/checkbox-group/checkbox-group.@(js|json|wxml|wxss)"
+      },
+      {
+        "type": "glob",
+        "value": "miniprogram_npm/weui-miniprogram/checkbox/checkbox.@(js|json|wxml|wxss)"
+      },
+      {
+        "type": "glob",
+        "value": "miniprogram_npm/weui-miniprogram/dialog/dialog.@(js|json|wxml|wxss)"
+      },
+      {
+        "type": "glob",
+        "value": "miniprogram_npm/weui-miniprogram/form-page/form-page.@(js|json|wxml|wxss)"
+      },
+      {
+        "type": "glob",
+        "value": "miniprogram_npm/weui-miniprogram/form/form.@(js|json|wxml)"
+      },
+      {
+        "type": "glob",
+        "value": "miniprogram_npm/weui-miniprogram/gallery/gallery.@(js|json|wxml|wxss)"
+      },
+      {
+        "type": "glob",
+        "value": "miniprogram_npm/weui-miniprogram/half-screen-dialog/half-screen-dialog.@(js|json|wxml|wxss)"
+      },
+      {
+        "type": "glob",
+        "value": "miniprogram_npm/weui-miniprogram/icon/icon.@(js|json|wxml|wxss)"
+      },
+      {
+        "type": "glob",
+        "value": "miniprogram_npm/weui-miniprogram/index.@(js|json)"
+      },
+      {
+        "type": "glob",
+        "value": "miniprogram_npm/weui-miniprogram/msg/msg.@(js|json|wxml|wxss)"
+      },
+      {
+        "type": "glob",
+        "value": "miniprogram_npm/weui-miniprogram/navigation-bar/navigation-bar.@(js|json|wxml|wxss)"
+      },
+      {
+        "type": "file",
+        "value": "miniprogram_npm/weui-miniprogram/package.json"
+      },
+      {
+        "type": "glob",
+        "value": "miniprogram_npm/weui-miniprogram/slideview/slideview.@(js|json|wxml|wxs|wxss)"
+      },
+      {
+        "type": "glob",
+        "value": "miniprogram_npm/weui-miniprogram/tabbar/tabbar.@(js|json|wxml|wxss)"
+      },
+      {
+        "type": "glob",
+        "value": "miniprogram_npm/weui-miniprogram/toptips/toptips.@(js|json|wxml|wxss)"
+      },
+      {
+        "type": "glob",
+        "value": "miniprogram_npm/weui-miniprogram/uploader/uploader.@(js|json|wxml|wxss)"
+      },
+      {
+        "type": "glob",
+        "value": "miniprogram_npm/weui-miniprogram/video-swiper/video-swiper.@(js|json|wxml|wxss)"
+      },
+      {
+        "type": "file",
+        "value": "miniprogram_npm/wxml-to-canvas/utils.js"
+      },
+      {
+        "type": "file",
+        "value": "package-lock.json"
+      },
+      {
+        "type": "file",
+        "value": "package.json"
+      },
+      {
+        "type": "file",
+        "value": "util/unused.js"
+      }
+    ]
+  }
 }
