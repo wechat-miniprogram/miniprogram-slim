@@ -3,10 +3,27 @@
   "version": "1.0.0",
   "description": "analyze miniprogram dependencies, find unused files",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint \"src/**/*js\" --fix"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["miniprogram", "slim", "dependencies analyzer", "useless file"],
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "npm test"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.js": [
+      "prettier --write",
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "keywords": [
+    "miniprogram",
+    "slim",
+    "dependencies analyzer",
+    "useless file"
+  ],
   "author": "sanfordsun",
   "license": "MIT",
   "dependencies": {
@@ -30,6 +47,7 @@
     "jscpd": "^3.0.0",
     "node-html-parser": "^1.2.14",
     "ora": "^4.0.3",
+    "prettier": "^2.0.4",
     "shelljs": "^0.8.3",
     "simple-node-logger": "^18.12.24",
     "spritesmith": "^3.4.0"
@@ -42,6 +60,8 @@
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.2.1"
+    "eslint-plugin-promise": "^4.2.1",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.1.6"
   }
 }
