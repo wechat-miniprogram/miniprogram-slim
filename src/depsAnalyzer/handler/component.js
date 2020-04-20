@@ -1,4 +1,3 @@
-const path = require('path')
 const fs = require('fs-extra')
 const {suffixExtname} = require('../utils/util')
 const {findAbsolutePath} = require('./util')
@@ -7,7 +6,6 @@ const {findAbsolutePath} = require('./util')
 const singleJsonAnalyzer = (filePath) => {
   const config = fs.readJSONSync(filePath)
   const usingComponents = config.usingComponents || {}
-  const dirname = path.dirname(filePath)
   const deps = {}
   Object.keys(usingComponents).forEach(comp => {
     const relativePath = usingComponents[comp]

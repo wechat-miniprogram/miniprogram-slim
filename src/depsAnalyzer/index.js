@@ -10,7 +10,6 @@ const {createLog, genPackOptions, drawTable} = require('./utils/util')
 const {findUnusedFiles, findAllComponentDeps,findAllFileInfo} = require('./utils/unused')
 const {analyzeComponent} = require('./handler/analyzerComp')
 const {genEsModuleDepsGraph} = require('./handler/esmodule')
-const {setRoot, setWeappNpmPath} = require('./handler/util')
 
 
 /**
@@ -43,16 +42,6 @@ const genAppDepsGraph = (cli) => {
   const entryPath = compileType === 'miniprogram' ? 'app.json' : 'plugin.json'
   const entryJson = fs.readJSONSync(entryPath)
   const pages = compileType === 'miniprogram' ? entryJson.pages : Object.values(entryJson.pages || {})
-
-  // root
-  setRoot('./')
-
-  // miniprogram_npm 目录
-  const weappNpmGlob = glob.sync('**/miniprogram_npm/', {
-    ignore: '**/node_modules/**'
-  })
-  const weappNpmPath = weappNpmGlob[0] || null
-  setWeappNpmPath(weappNpmPath)
 
   const dependencies = {
     app: {},
@@ -99,7 +88,6 @@ const genAppDepsGraph = (cli) => {
     dependencies.pages[page] = analyzeComponent(page)
   })
   spinner.succeed(`analyzer pages success, used ${Math.ceil(perf.stop().time)}ms`)
-
 
   //  无用文件
   perf.start()

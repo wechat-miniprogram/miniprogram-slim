@@ -26,8 +26,6 @@ const findAllComponent = () => {
       const usingComps = Object.values(content.usingComponents)
       usingComps.forEach(comp => {
         if (!comp.startsWith('plugin://')) {
-          // const dirname = path.dirname(filePath)
-          // const compPath = findAbsolutePath(dirname, comp)
           const compPath = findAbsolutePath({
             filePath,
             relativePath: comp,
