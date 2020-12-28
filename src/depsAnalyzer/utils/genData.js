@@ -38,6 +38,7 @@ const genPageData = ({
   let totalSize = 0
   const files = pageDeps.files.sort()
   files.forEach(file => {
+    if (!file) return
     const fileData = genFileData(file, allFileInfo)
     children.push(fileData)
     totalSize += fileData.size
