@@ -2,6 +2,7 @@ const path = require('path')
 const inspect = require('util').inspect
 const Table = require('cli-table3')
 const colors = require('colors')
+const {VALID_EXTS} = require('./constant')
 
 const createLog = (module) => {
   const manager = require('simple-node-logger').createLogManager({
@@ -13,7 +14,14 @@ const createLog = (module) => {
 
 const suffixExtname = (filePath, ext = 'js') => {
   const sep = path.sep
-  const {dir, name} = path.parse(filePath)
+  const parseResult = path.parse(filePath)
+  const {dir, base} = path.parse(filePath)
+  let {name, ext: parseExt} = parseResult
+
+  parseExt = parseExt.slice(1)
+  if (parseExt && parseExt !== ext && !VALID_EXTS.includes(parseExt)) {
+    name = base
+  }
   return dir ? `${dir}${sep}${name}.${ext}` : `${name}.${ext}`
 }
 

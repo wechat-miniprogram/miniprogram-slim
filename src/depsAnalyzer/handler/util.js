@@ -1,15 +1,11 @@
 const path = require('path')
 const fs = require('fs-extra')
 const {suffixExtname} = require('../utils/util')
+const {MINIPROGRAM_NPM_PATH} = require('../utils/constant')
 
-const findNpmPath = ({
-  cwd,
-  relativePath,
-  ext
-}) => {
-  const dir = 'miniprogram_npm/'
+const findNpmPath = ({cwd, relativePath, ext}) => {
   const absoluteRoot = process.cwd()
-  const weappNpmPath = path.join(cwd, dir)
+  const weappNpmPath = path.join(cwd, MINIPROGRAM_NPM_PATH)
   let absolutePath
 
   if (fs.existsSync(weappNpmPath)) {
@@ -34,15 +30,11 @@ const findNpmPath = ({
   return findNpmPath({
     cwd: path.resolve(cwd, '../'),
     relativePath,
-    ext
+    ext,
   })
 }
 
-const findAbsolutePath = ({
-  filePath,
-  relativePath,
-  ext
-}) => {
+const findAbsolutePath = ({filePath, relativePath, ext}) => {
   // 包内文件: 根目录、相对目录
   const dirname = path.dirname(filePath)
   let absolutePath = null
@@ -61,7 +53,7 @@ const findAbsolutePath = ({
     absolutePath = findNpmPath({
       relativePath,
       cwd: path.resolve(dirname, './'),
-      ext
+      ext,
     })
     if (absolutePath) {
       return absolutePath
@@ -71,5 +63,5 @@ const findAbsolutePath = ({
 }
 
 module.exports = {
-  findAbsolutePath
+  findAbsolutePath,
 }

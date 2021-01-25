@@ -2,17 +2,15 @@ const path = require('path')
 const glob = require('glob')
 const fs = require('fs-extra')
 const {difference} = require('./setOperation')
-const {analyzeComponent, computeComponentSize} = require('../handler/analyzerComp')
+const {
+  analyzeComponent,
+  computeComponentSize,
+} = require('../handler/analyzerComp')
 const {findAbsolutePath} = require('../handler/util')
-
-const defaultIgnores = [
-  '**/node_modules/**',
-  'project.config.json',
-  '**/sitemap.json'
-]
+const {VALID_EXTS, DEFAULT_IGNORES} = require('./constant')
 
 const findAllComponent = () => {
-  const jsonFiles = glob.sync('**/*.json', {ignore: [...defaultIgnores]})
+  const jsonFiles = glob.sync('**/*.json', {ignore: [...DEFAULT_IGNORES]})
   const components = new Set()
 
   for (const filePath of jsonFiles) {
@@ -23,12 +21,12 @@ const findAllComponent = () => {
 
     if (content.usingComponents) {
       const usingComps = Object.values(content.usingComponents)
-      usingComps.forEach(comp => {
+      usingComps.forEach((comp) => {
         if (!comp.startsWith('plugin://')) {
           const compPath = findAbsolutePath({
             filePath,
             relativePath: comp,
-            ext: 'json'
+            ext: 'json',
           })
           if (compPath) components.add(compPath)
         }
@@ -39,12 +37,11 @@ const findAllComponent = () => {
 }
 
 const findAllFileInfo = () => {
-  const exts = ['wxml', 'wxss', 'wxs', 'js', 'json'].join('|')
-  const allFiles = glob.sync(`**/*.@(${exts})`, {
-    ignore: [...defaultIgnores]
+  const allFiles = glob.sync(`**/*.@(${VALID_EXTS.join('|')})`, {
+    ignore: [...DEFAULT_IGNORES],
   })
   const allFileInfo = {}
-  allFiles.forEach(file => {
+  allFiles.forEach((file) => {
     const size = +(fs.statSync(file).size / 1000).toFixed(2) // kB
     const ext = path.extname(file)
     const name = path.basename(file, ext)
@@ -53,7 +50,7 @@ const findAllFileInfo = () => {
       name,
       ext,
       size,
-      basename
+      basename,
     }
   })
   return allFileInfo
@@ -61,8 +58,8 @@ const findAllFileInfo = () => {
 
 const findIgnoreFils = (ignore = []) => {
   const ignoreFiles = []
-  ignore.forEach(pattern => {
-    const files = glob.sync(pattern, {ignore: [...defaultIgnores]})
+  ignore.forEach((pattern) => {
+    const files = glob.sync(pattern, {ignore: [...DEFAULT_IGNORES]})
     ignoreFiles.push(...files)
   })
   const uniqueIgnoreFiles = Array.from(new Set(ignoreFiles))
@@ -72,7 +69,7 @@ const findIgnoreFils = (ignore = []) => {
 const findAllComponentDeps = (allFileInfo) => {
   const components = findAllComponent()
   const componentDeps = {}
-  components.forEach(comp => {
+  components.forEach((comp) => {
     const deps = analyzeComponent(comp)
     const size = computeComponentSize(deps, allFileInfo)
     deps.size = size
@@ -85,7 +82,7 @@ const findUnusedFiles = ({
   allFileInfo,
   componentDeps,
   dependencies,
-  ignore
+  ignore,
 }) => {
   // 所有文件
   const allFiles = Object.keys(allFileInfo)
@@ -94,10 +91,10 @@ const findUnusedFiles = ({
   const {app, pages, subpackages} = dependencies
   const deps = [app, ...Object.values(pages), ...Object.values(subpackages)]
   const usedCompSet = new Set()
-  deps.forEach(item => {
-    item.compDeps.forEach(comp => usedCompSet.add(comp))
+  deps.forEach((item) => {
+    item.compDeps.forEach((comp) => usedCompSet.add(comp))
   })
-  usedCompSet.forEach(comp => {
+  usedCompSet.forEach((comp) => {
     if (componentDeps[comp]) {
       deps.push(componentDeps[comp])
     }
@@ -108,7 +105,7 @@ const findUnusedFiles = ({
 
   // 已使用的文件
   const usedFiles = []
-  deps.forEach(item => {
+  deps.forEach((item) => {
     usedFiles.push(...item.files)
   })
   const usedFileSet = new Set(usedFiles)
@@ -126,5 +123,5 @@ const findUnusedFiles = ({
 module.exports = {
   findUnusedFiles,
   findAllComponentDeps,
-  findAllFileInfo
+  findAllFileInfo,
 }

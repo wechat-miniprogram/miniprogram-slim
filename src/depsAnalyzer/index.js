@@ -17,6 +17,7 @@ const {
 } = require('./utils/unused')
 const {analyzeComponent} = require('./handler/analyzerComp')
 const {genEsModuleDepsGraph} = require('./handler/esmodule')
+const {PROJECT_CONFIG_PATH} = require('./utils/constant')
 
 /**
  * 1. 忽略引用插件中的组件
@@ -25,13 +26,12 @@ const {genEsModuleDepsGraph} = require('./handler/esmodule')
 const genAppDepsGraph = (cli) => {
   // log.setLevel('warn')
 
-  const projectConfigPath = './project.config.json'
-  if (!fs.existsSync(projectConfigPath)) {
-    console.warn('Error: project.config.json is not exist')
+  if (!fs.existsSync(PROJECT_CONFIG_PATH)) {
+    console.warn(`Error: ${PROJECT_CONFIG_PATH} is not exist`)
     return
   }
 
-  const projectConfig = fs.readJSONSync(projectConfigPath)
+  const projectConfig = fs.readJSONSync(PROJECT_CONFIG_PATH)
   const {
     compileType = 'miniprogram',
     miniprogramRoot = './',
@@ -164,7 +164,7 @@ const genAppDepsGraph = (cli) => {
       packOptions.ignore
     )
     fs.writeFileSync(
-      'project.config.json',
+      PROJECT_CONFIG_PATH,
       JSON.stringify(projectConfig, null, 2)
     )
   }
