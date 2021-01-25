@@ -20,7 +20,7 @@ const singleModuleAnalyser = ({filePath, ext}) => {
           const depFilePath = findAbsolutePath({
             filePath,
             relativePath: firstParam.value,
-            ext
+            ext,
           })
           if (depFilePath) {
             deps[firstParam.value] = depFilePath
@@ -33,12 +33,12 @@ const singleModuleAnalyser = ({filePath, ext}) => {
       const depFilePath = findAbsolutePath({
         filePath,
         relativePath: node.source.value,
-        ext
+        ext,
       })
       if (depFilePath) {
         deps[node.source.value] = depFilePath
       }
-    }
+    },
   })
 
   return {
@@ -47,21 +47,31 @@ const singleModuleAnalyser = ({filePath, ext}) => {
   }
 }
 
-const genModuleDepsGraph = ({entry, ext, stack = []}) => {
+const genModuleDepsGraph = ({entry, ext, stack = []}, depsGraphCache) => {
   entry = suffixExtname(entry, ext)
-  if (!fs.existsSync(entry)) return {}
-  if (stack.includes(entry)) return {}
+  if (!fs.existsSync(entry) || stack.includes(entry)) {
+    return {}
+  }
+  if (depsGraphCache[entry]) {
+    // using cache to avoid bug while meeting loop dep
+    return depsGraphCache[entry]
+  }
 
   stack.push(entry)
   const entryModule = singleModuleAnalyser({filePath: entry, ext})
-
   const deps = entryModule.deps
-  const depsGraph = {[entry]: deps}
-  Object.values(deps).forEach(entry => {
-    Object.assign(depsGraph, genModuleDepsGraph({entry, ext, stack}))
+  depsGraphCache[entry] = deps
+
+  Object.values(deps).forEach((entry) => {
+    genModuleDepsGraph({entry, ext, stack}, depsGraphCache)
   })
   stack.pop()
-  return depsGraph
+  return depsGraphCache
+}
+
+const genModuleDepsGraphWithCache = (options) => {
+  const depsGraphCache = {}
+  return genModuleDepsGraph(options, depsGraphCache)
 }
 
 class Node {
@@ -97,14 +107,14 @@ class Graph {
  */
 const formatModuleDepsGraph = (moduleDepsGraph) => {
   const graph = new Graph()
-  Object.keys(moduleDepsGraph).forEach(entry => {
+  Object.keys(moduleDepsGraph).forEach((entry) => {
     const node = new Node(entry)
     graph.addNode(node)
   })
-  Object.keys(moduleDepsGraph).forEach(entry => {
+  Object.keys(moduleDepsGraph).forEach((entry) => {
     const entryId = graph.map[entry]
     const deps = Object.values(moduleDepsGraph[entry])
-    deps.forEach(dep => {
+    deps.forEach((dep) => {
       const id = graph.map[dep]
       graph.nodes[entryId].addChild(id)
     })
@@ -114,19 +124,27 @@ const formatModuleDepsGraph = (moduleDepsGraph) => {
 
 const genWxsModuleDepsGraph = (entry) => {
   const stack = []
-  const moduleDepsGraph = genModuleDepsGraph({entry, ext: 'wxs', stack})
+  const moduleDepsGraph = genModuleDepsGraphWithCache({
+    entry,
+    ext: 'wxs',
+    stack,
+  })
   const graph = formatModuleDepsGraph(moduleDepsGraph)
   return graph
 }
 
 const genEsModuleDepsGraph = (entry) => {
   const stack = []
-  const moduleDepsGraph = genModuleDepsGraph({entry, ext: 'js', stack})
+  const moduleDepsGraph = genModuleDepsGraphWithCache({
+    entry,
+    ext: 'js',
+    stack,
+  })
   const graph = formatModuleDepsGraph(moduleDepsGraph)
   return graph
 }
 
 module.exports = {
   genEsModuleDepsGraph,
-  genWxsModuleDepsGraph
+  genWxsModuleDepsGraph,
 }
