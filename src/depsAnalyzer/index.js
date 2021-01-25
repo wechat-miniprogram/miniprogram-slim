@@ -5,8 +5,16 @@ const path = require('path')
 const shell = require('shelljs')
 const perf = require('execution-time')()
 const {genData} = require('./utils/genData')
-const {genPackOptions, drawTable} = require('./utils/util')
-const {findUnusedFiles, findAllComponentDeps, findAllFileInfo} = require('./utils/unused')
+const {
+  genPackOptions,
+  drawTable,
+  genPackOptionsIgnore,
+} = require('./utils/util')
+const {
+  findUnusedFiles,
+  findAllComponentDeps,
+  findAllFileInfo,
+} = require('./utils/unused')
 const {analyzeComponent} = require('./handler/analyzerComp')
 const {genEsModuleDepsGraph} = require('./handler/esmodule')
 
@@ -27,7 +35,7 @@ const genAppDepsGraph = (cli) => {
   const {
     compileType = 'miniprogram',
     miniprogramRoot = './',
-    pluginRoot = 'plugin'
+    pluginRoot = 'plugin',
   } = projectConfig
 
   const cwd = process.cwd()
@@ -39,12 +47,15 @@ const genAppDepsGraph = (cli) => {
   shell.cd(root)
   const entryPath = compileType === 'miniprogram' ? 'app.json' : 'plugin.json'
   const entryJson = fs.readJSONSync(entryPath)
-  const pages = compileType === 'miniprogram' ? entryJson.pages : Object.values(entryJson.pages || {})
+  const pages =
+    compileType === 'miniprogram'
+      ? entryJson.pages
+      : Object.values(entryJson.pages || {})
 
   const dependencies = {
     app: {},
     pages: {},
-    subpackages: {}
+    subpackages: {},
   }
 
   perf.start('global')
@@ -59,7 +70,9 @@ const genAppDepsGraph = (cli) => {
     dependencies.app.esDeps = Object.keys(esmoduleDepsGraph.map)
     dependencies.app.files.push(...dependencies.app.esDeps)
   }
-  spinner.succeed(`analyze ${entryPath} success, used ${Math.ceil(perf.stop().time)}ms`)
+  spinner.succeed(
+    `analyze ${entryPath} success, used ${Math.ceil(perf.stop().time)}ms`
+  )
 
   // 分包处理
   if (compileType === 'miniprogram') {
@@ -67,25 +80,29 @@ const genAppDepsGraph = (cli) => {
     spinner.start('analyzer subpackages')
 
     const subpackages = entryJson.subpackages || entryJson.subPackages || []
-    subpackages.forEach(subpackage => {
+    subpackages.forEach((subpackage) => {
       const {root, pages} = subpackage
-      pages.forEach(page => {
+      pages.forEach((page) => {
         const entry = path.join(root, page)
         dependencies.subpackages[entry] = analyzeComponent(entry)
       })
     })
 
-    spinner.succeed(`analyzer subpackages success, used ${Math.ceil(perf.stop().time)}ms`)
+    spinner.succeed(
+      `analyzer subpackages success, used ${Math.ceil(perf.stop().time)}ms`
+    )
   }
 
   // 页面处理
   perf.start()
   spinner.start('analyzer pages')
 
-  pages.forEach(page => {
+  pages.forEach((page) => {
     dependencies.pages[page] = analyzeComponent(page)
   })
-  spinner.succeed(`analyzer pages success, used ${Math.ceil(perf.stop().time)}ms`)
+  spinner.succeed(
+    `analyzer pages success, used ${Math.ceil(perf.stop().time)}ms`
+  )
 
   //  无用文件
   perf.start()
@@ -96,15 +113,22 @@ const genAppDepsGraph = (cli) => {
     allFileInfo,
     componentDeps,
     dependencies,
-    ignore
+    ignore,
   })
-  spinner.succeed(`find unusedFiles success, used ${Math.ceil(perf.stop().time)}ms`)
+  spinner.succeed(
+    `find unusedFiles success, used ${Math.ceil(perf.stop().time)}ms`
+  )
 
   // 生成打包配置
   perf.start()
   spinner.start('generate packOptions')
-  const packOptions = genPackOptions(unusedFiles, compileType === 'plugin' ? pluginRoot : '')
-  spinner.succeed(`generate packOptions success, used ${Math.ceil(perf.stop().time)}ms`)
+  const packOptions = genPackOptions(
+    unusedFiles,
+    compileType === 'plugin' ? pluginRoot : ''
+  )
+  spinner.succeed(
+    `generate packOptions success, used ${Math.ceil(perf.stop().time)}ms`
+  )
 
   // 可视化数据
   perf.start()
@@ -112,15 +136,17 @@ const genAppDepsGraph = (cli) => {
   const data = genData({
     dependencies,
     componentDeps,
-    allFileInfo
+    allFileInfo,
   })
-  spinner.succeed(`generate file size data success, used ${Math.ceil(perf.stop().time)}ms`)
+  spinner.succeed(
+    `generate file size data success, used ${Math.ceil(perf.stop().time)}ms`
+  )
 
   const result = {
     packOptions,
     dependencies,
     unusedFiles,
-    data
+    data,
   }
 
   // 输出结果
@@ -133,14 +159,20 @@ const genAppDepsGraph = (cli) => {
 
   if (cli.write) {
     if (!projectConfig.packOptions) projectConfig.packOptions = {}
-    if (!projectConfig.packOptions.ignore) projectConfig.packOptions.ignore = []
-
-    const _packOptions = projectConfig.packOptions
-    const _ignore = _packOptions.ignore
-    _ignore.push(...packOptions.ignore)
-    fs.writeFileSync('project.config.json', JSON.stringify(projectConfig, null, 2))
+    projectConfig.packOptions.ignore = genPackOptionsIgnore(
+      projectConfig.packOptions.ignore,
+      packOptions.ignore
+    )
+    fs.writeFileSync(
+      'project.config.json',
+      JSON.stringify(projectConfig, null, 2)
+    )
   }
-  spinner.succeed(`finish, everything looks good, total used ${Math.ceil(perf.stop('global').time)}ms`)
+  spinner.succeed(
+    `finish, everything looks good, total used ${Math.ceil(
+      perf.stop('global').time
+    )}ms`
+  )
 
   if (showTable) {
     drawTable(data)
@@ -151,7 +183,10 @@ program
   .command('analyzer')
   .description('Analyze dependencies of miniprogram, find out unused files')
   .option('-o, --output [dir]', 'path to directory for result', './analyzer')
-  .option('-i, --ignore <glob>', 'glob pattern for files what should be excluded from unused files')
+  .option(
+    '-i, --ignore <glob>',
+    'glob pattern for files what should be excluded from unused files'
+  )
   .option('-w, --write', 'overwrite old project.config.json')
   .option('-t, --table', 'print miniprogram file size data')
   .action(genAppDepsGraph)
