@@ -5,26 +5,26 @@ const {findAbsolutePath} = require('./util')
 
 const traverseWxml = (root) => {
   const result = []
-  const tagName = root.tagName
+  const tagName = root.rawTagName
   if (root.nodeType !== 1) return result
 
   const keywords = ['import', 'include', 'wxs']
   if (keywords.includes(tagName)) {
     const rawAttrs = root.rawAttrs.split(' ')
-    rawAttrs.forEach(attr => {
+    rawAttrs.forEach((attr) => {
       const pairs = attr.split('=')
       if (pairs[0] === 'src' && pairs[1]) {
         const route = pairs[1].replace(/'|"/g, '')
         const type = tagName === 'wxs' ? 'wxs' : 'wxml'
         result.push({
           type,
-          route
+          route,
         })
       }
     })
   }
   const childNodes = root.childNodes
-  childNodes.forEach(child => {
+  childNodes.forEach((child) => {
     const childResult = traverseWxml(child)
     result.push(...childResult)
   })
@@ -39,18 +39,18 @@ const singleWxmlAnalyser = (filePath) => {
     script: false,
     style: false,
     pre: false,
-    comment: false
+    comment: false,
   })
 
   const wxmlDeps = {}
   const wxsDeps = {}
   const depFiles = traverseWxml(root)
-  depFiles.forEach(item => {
+  depFiles.forEach((item) => {
     const {type, route} = item
     const depFilePath = findAbsolutePath({
       filePath,
       relativePath: route,
-      ext: type
+      ext: type,
     })
     if (depFilePath) {
       if (type === 'wxml') {
@@ -64,7 +64,7 @@ const singleWxmlAnalyser = (filePath) => {
   return {
     filePath,
     wxmlDeps,
-    wxsDeps
+    wxsDeps,
   }
 }
 
@@ -77,11 +77,11 @@ const genWxmlDepsGraph = (entry) => {
   const depsGraph = {
     [entry]: {
       wxsDeps,
-      wxmlDeps
-    }
+      wxmlDeps,
+    },
   }
 
-  Object.values(wxmlDeps).forEach(entry => {
+  Object.values(wxmlDeps).forEach((entry) => {
     Object.assign(depsGraph, genWxmlDepsGraph(entry))
   })
   return depsGraph
@@ -89,7 +89,7 @@ const genWxmlDepsGraph = (entry) => {
 
 const genWxsDepsMap = (wxmlDepsGraph) => {
   const wxsMap = {}
-  Object.values(wxmlDepsGraph).forEach(item => {
+  Object.values(wxmlDepsGraph).forEach((item) => {
     Object.assign(wxsMap, item.wxsDeps)
   })
   return wxsMap
@@ -97,5 +97,5 @@ const genWxsDepsMap = (wxmlDepsGraph) => {
 
 module.exports = {
   genWxmlDepsGraph,
-  genWxsDepsMap
+  genWxsDepsMap,
 }
