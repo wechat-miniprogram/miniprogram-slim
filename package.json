@@ -46,6 +46,7 @@
     "imagemin-gifsicle": "^7.0.0",
     "imagemin-jpegtran": "^6.0.0",
     "imagemin-pngquant": "^8.0.0",
+    "imagemin-svgo": "^8.0.0",
     "inquirer": "^7.0.6",
     "jscpd": "^3.0.0",
     "node-html-parser": "^1.2.14",
