@@ -15,4 +15,5 @@ Options:
   --png-quality <string>  instructs pngquant to use the least amount of colors (default: "0.65,0.8")
   --no-progressive        creates baseline JPEG file
   -h, --help              output usage information
+  --keep-path             output files keep relative path
 ```

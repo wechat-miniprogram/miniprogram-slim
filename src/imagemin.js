@@ -48,6 +48,12 @@ async function imageminAction(input, cli) {
   if (output && keepPath) {
     files.forEach((file) => {
       const {base, dir} = path.parse(file.sourcePath)
+      if (/^\/|^\.(\.)+\//.test(dir)) {
+        console.error(
+          'Please use relative input path when using keep-path option'
+        )
+        process.exit(1)
+      }
       const outputDir = path.join(output, dir.slice(dir.indexOf('/') + 1))
       cp.execSync(`mkdir -p ${outputDir}`)
       fs.writeFileSync(path.join(outputDir, base), file.data)

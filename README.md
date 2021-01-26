@@ -33,6 +33,6 @@ Commands:
 Examples:
   $ miniprogram-slim analyzer -t
   $ miniprogram-slim cpd src
-  $ miniprogram-slim imagemin images/**/*.png
-  $ miniprogram-slim sprite -f emoji images/**/*.png
+  $ miniprogram-slim imagemin "images/**/{*.jpg,*.jpeg,*.png,*.svg}"
+  $ miniprogram-slim sprite -f emoji "images/**/*.png"
 ```
