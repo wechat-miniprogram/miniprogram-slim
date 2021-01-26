@@ -28,7 +28,9 @@ async function imageminAction(input, cli) {
     imageminGifsicle({
       interlaced: progressive,
     }),
-    imageminSvgo({}),
+    imageminSvgo({
+      plugins: [{removeViewBox: false}],
+    }),
   ]
   const spinner = ora('Minifying images')
   if (output) {
