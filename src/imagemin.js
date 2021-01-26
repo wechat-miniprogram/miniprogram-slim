@@ -7,6 +7,7 @@ const imagemin = require('imagemin')
 const imageminJpegtran = require('imagemin-jpegtran')
 const imageminPngquant = require('imagemin-pngquant')
 const imageminGifsicle = require('imagemin-gifsicle')
+const imageminSvgo = require('imagemin-svgo')
 
 async function imageminAction(input, cli) {
   const {
@@ -27,6 +28,7 @@ async function imageminAction(input, cli) {
     imageminGifsicle({
       interlaced: progressive,
     }),
+    imageminSvgo({}),
   ]
   const spinner = ora('Minifying images')
   if (output) {
